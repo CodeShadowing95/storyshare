@@ -1,3 +1,3 @@
-# StoryShare [![CI](https://github.com/StoryShare/StoryShare/workflows/CI/badge.svg)](https://github.com/StoryShare/StoryShare/actions)
+# StoryShare
 
-[![npm version](https://img.shields.io/npm/v/@storyshare/storageserver.svg)](https://www.npmjs.com/package/@storyshare/storageserver)
+StoryShare is a social media application where users can share stories with others. The application allows users to create profiles, upload photos and videos, and write stories about their experiences. Users can also like and comment on other users' posts. The application also offers a feature to share stories with others through messaging. StoryShare aims to provide a platform for users to connect with others and share their stories in a visually appealing way. The application aims to be a social hub where users can engage with each other and share their experiences.
