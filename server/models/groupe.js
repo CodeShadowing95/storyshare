@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const groupeSchema = mongoose.Schema({
+  creator: { type: String },
   name: { type: String, required: true },
   description: { type: String },
   photo: { type: String },
@@ -10,9 +11,8 @@ const groupeSchema = mongoose.Schema({
       role: { type: String }
     }
   ],
-  creator: { type: String },
 })
 
-const Groupe = mongoose.model("Groupe", groupeSchema);
+const Group = mongoose.model("Group", groupeSchema);
 
-export default Groupe;
+export default Group;

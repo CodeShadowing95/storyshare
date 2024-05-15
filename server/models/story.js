@@ -1,25 +1,27 @@
-import mongoose from "mongoose";
+import mongoose, { models } from "mongoose";
 
 const storySchema = mongoose.Schema({
-  creator: { type: String },
+  creator: String,
   content: [
-    { text: { type: String } },
-    { video: { type: String } },
-    { image: { type: String } },
+    { text: String },
+    { video: String },
+    { image: String },
   ],
-  interactions: [
+  views: Number,
+  likes: {
+    type: [String],
+    default: [],
+  },
+  comments: [
     {
-      views: { type: Number },
-      likes: { type: Number },
-      comments: [
-        {
-          text : { type: String },
-          user: { type: String }
-        },
-      ]
+      text : String,
+      user: String
     },
   ],
-  datetime: { type: Date },
+  createdAt: {
+    type: Date,
+    default: new Date()
+  }
 });
 
 const Story = mongoose.model("Story", storySchema);

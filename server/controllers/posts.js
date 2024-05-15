@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
-import PostMessage from "../models/postMessage.js";
+import PostMessage from "../models/post.js";
 
 
 /**
- * This code defines an asynchronous function getPosts that retrieves a list of posts from the database. It uses PostMessage.find() to fetch posts, sorts them in descending order by _id, and sends the posts as a JSON response with status 200. In case of an error, it responds with the error message.
+ * This code defines an asynchronous function getPosts that retrieves a list of posts from the database.
+ * It uses PostMessage.find() to fetch posts, sorts them in descending order by _id, and sends the posts as a JSON response with status 200.
+ * In case of an error, it responds with the error message.
  *
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
@@ -21,7 +23,8 @@ export const getPosts = async (req, res) => {
 }
 
 /**
- * This code defines an asynchronous function getPost that retrieves a single post based on the id parameter from the request. It uses PostMessage.findById(id) to find the post. If successful, it responds with status 200 and the retrieved post as JSON. If there is an error, it responds with status 404 and an error message.
+ * This code defines an asynchronous function getPost that retrieves a single post based on the id parameter from the request.
+ * It uses PostMessage.findById(id) to find the post. If successful, it responds with status 200 and the retrieved post as JSON. If there is an error, it responds with status 404 and an error message.
  * 
  * @param {*} req - The request object.
  * @param {*} res - The response object.
@@ -97,7 +100,10 @@ export const updatePost = async (req, res) => {
 }
 
 /**
- * This code snippet defines an asynchronous function deletePost that deletes a post from the database based on the provided id. It first checks if the id is a valid MongoDB ObjectId. If not valid, it returns a 404 status with a message. If valid, it uses PostMessage.findByIdAndRemove(id) to delete the post and then responds with a JSON message indicating successful deletion.
+ * This code snippet defines an asynchronous function deletePost that deletes a post from the database based on the provided id.
+ * It first checks if the id is a valid MongoDB ObjectId. If not valid, it returns a 404 status with a message.
+ * If valid, it uses PostMessage.findByIdAndRemove(id) to delete the post and then responds with a JSON message indicating successful deletion.
+ * 
  * @param {*} req 
  * @param {*} res 
  * @returns {Promise<void>} - A promise that resolves when the post is deleted and sent as a JSON response.
@@ -115,7 +121,10 @@ export const deletePost = async (req, res) => {
 }
 
 /**
- * This code defines an asynchronous function likePost that handles liking/unliking a post. It first checks if the user is authenticated, then finds the post by its id. It checks if the user has already liked the post, adds the like if not, or removes it if already liked. Finally, it updates the post with the new like status and returns the updated post as JSON.
+ * This code defines an asynchronous function likePost that handles liking/unliking a post.
+ * It first checks if the user is authenticated, then finds the post by its id.
+ * It checks if the user has already liked the post, adds the like if not, or removes it if already liked. Finally, it updates the post with the new like status and returns the updated post as JSON.
+ * 
  * @param {*} req 
  * @param {*} res 
  * @returns {Promise<void>} - A promise that resolves when the post is liked and sent as a JSON response.

@@ -4,6 +4,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 
+import postRoutes from "./routes/posts.js";
+
 
 // It creates a new instance of the Express application. It's like creating a new project or a new file where we will define all the routes and other functionality of our server. We'll be using this 'app' throughout our code to define and access all the routes, middleware, and other functionalities of our server.
 const app = express();
