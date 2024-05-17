@@ -1,12 +1,10 @@
-import mongoose, { models } from "mongoose";
+import mongoose from "mongoose";
 
 
 const postSchema = mongoose.Schema({
-  title: String,
-  message: String,
+  postText: String,
+  description: String,
   creator: String,
-  name: String,
-  tags: [String],
   images: [String],
   likes: {
     type: [String],

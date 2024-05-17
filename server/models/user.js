@@ -7,7 +7,7 @@ const userSchema = mongoose.Schema({
   password: { type: String, required: true },
   avatar: { type: String },
   bio: { type: String },
-  subscribers: { type: [String] },
+  friends: { type: [String] },
 });
 
 const User = models.User || mongoose.model("User", userSchema);

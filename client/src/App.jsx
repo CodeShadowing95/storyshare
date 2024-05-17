@@ -1,11 +1,11 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Home from './pages/Home'
 import { Sidebar } from './components'
+import Home from './pages/Home.jsx'
 
 const App = () => {
   return (
     <BrowserRouter>
-      <main className="flex sm:p-8 px-4 pt-8 pb-4 w-full min-h-screen">
+      <main className="flex sm:p-8 px-4 pt-8 pb-4 w-full min-h-screen relative">
         <Sidebar />
         <div className="min-h-screen">
           <Routes>
