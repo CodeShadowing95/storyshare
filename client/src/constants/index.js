@@ -1,3 +1,5 @@
+import { dashboard, friends, group, notification, post, story } from "../assets"
+
 const bgColors = [
   'bg-slate-100',
   'bg-gray-100',
@@ -23,4 +25,46 @@ const bgColors = [
   'bg-rose-100',
 ]
 
-export { bgColors }
+const menus = [
+  {
+    id: 1,
+    title: "Fil d'actualité",
+    icon: dashboard,
+    link: "feed",
+  },
+  {
+    id: 2,
+    title: "Mes publications",
+    icon: post,
+    link: "posts",
+  },
+  {
+    id: 3,
+    title: "Mes stories",
+    icon: story,
+    link: "stories",
+  },
+  {
+    id: 4,
+    title: "Forums",
+    icon: group,
+    link: "groups",
+  },
+  {
+    id: 5,
+    title: "Amis",
+    icon: friends,
+    link: "friends",
+  },
+  {
+    id: 6,
+    title: "Notifications",
+    icon: notification,
+    link: "notifications",
+  },
+]
+
+export {
+  bgColors,
+  menus,
+}

@@ -19,7 +19,7 @@ path ('/'). When a POST request is made to this path, the `createPost` function 
 controller will be executed to handle the request and send a response. This route is typically used
 for creating new resources on the server. */
 // router.post('/', auth, createPost);
-router.post('/', createPost);
+router.post('/create-post', createPost);
 
 /* `router.patch('/:id', updatePost);` is defining a route for handling HTTP PATCH requests to a
 specific URL path that includes an `id` parameter. When a PATCH request is made to this path, the

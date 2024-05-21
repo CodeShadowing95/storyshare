@@ -5,7 +5,13 @@ const postSchema = mongoose.Schema({
   postText: String,
   description: String,
   creator: String,
-  images: [String],
+  images: [
+    {
+      id: String,
+      src: String,
+    }
+  ],
+  tags: { type: [String], default: [] },
   likes: {
     type: [String],
     default: [],
@@ -22,6 +28,6 @@ const postSchema = mongoose.Schema({
   }
 })
 
-const PostMessage = mongoose.model('PostMessage', postSchema);
+const PostMessage = mongoose.model('post', postSchema);
 
 export default PostMessage;

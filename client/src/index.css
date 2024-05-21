@@ -30,3 +30,35 @@ body::-webkit-scrollbar-thumb {
     @apply flex justify-between items-center;
   }
 }
+
+.card-container {
+  perspective: 1000px;
+}
+
+.card-inner {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.999s;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.rotate-y-0 {
+  transform: rotateY(0deg);
+}
+
+.card-signin,
+.card-signup {
+  position: absolute;
+  backface-visibility: hidden;
+}
+
+.card-signin {
+  transform: rotateY(0deg);
+}
+
+.card-signup {
+  transform: rotateY(180deg);
+}

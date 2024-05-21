@@ -27,19 +27,6 @@ const Post = () => {
         </div>
       </div>
 
-      {/* Text */}
-      <p className="text-[12px] leading-5 font-medium">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eum doloribus eaque earum delectus tempora minima? Tempore, consequatur quia. Libero, minus veritatis amet maxime hic assumenda eum. Molestiae nisi quis eaque?</p>
-
-      {/* Tags */}
-      <div className="w-full flex flex-wrap gap-1">
-        <p className="text-xs font-bold text-blue-600">#vacances</p>
-        <p className="text-xs font-bold text-blue-600">#randonnées</p>
-        <p className="text-xs font-bold text-blue-600">#montagnes</p>
-        <p className="text-xs font-bold text-blue-600">#nature</p>
-        <p className="text-xs font-bold text-blue-600">#paysage</p>
-        <p className="text-xs font-bold text-blue-600">#voyagesexotiques</p>
-      </div>
-
 
       {/* Images if any */}
       <div className="w-full h-[200px] border gap-1 flex">
@@ -55,6 +42,19 @@ const Post = () => {
         <div className="h-full rounded-2xl bg-zinc-900/80 flex-1 flex justify-center items-center">
           <p className="text-lg text-white font-bold text-center">Plus de photos</p>
         </div>
+      </div>
+
+      {/* Text */}
+      <p className="text-[12px] leading-5 font-medium">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eum doloribus eaque earum delectus tempora minima? Tempore, consequatur quia. Libero, minus veritatis amet maxime hic assumenda eum. Molestiae nisi quis eaque?</p>
+
+      {/* Tags */}
+      <div className="w-full flex flex-wrap gap-1">
+        <p className="text-xs font-bold text-blue-600">#vacances</p>
+        <p className="text-xs font-bold text-blue-600">#randonnées</p>
+        <p className="text-xs font-bold text-blue-600">#montagnes</p>
+        <p className="text-xs font-bold text-blue-600">#nature</p>
+        <p className="text-xs font-bold text-blue-600">#paysage</p>
+        <p className="text-xs font-bold text-blue-600">#voyagesexotiques</p>
       </div>
 
       {/* Footer */}

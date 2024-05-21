@@ -19,23 +19,21 @@ export const signin = async (req, res) => {
     generating a JSON Web Token (JWT) using the `jsonwebtoken` library. The token is signed with a
     secret key `'test'` and contains the user's email and id as payload. This token can be used for
     authentication and authorization purposes. */
-    const token = jwt.sign({ email: currentUser.email, id: currentUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    // const token = jwt.sign({ email: currentUser.email, id: currentUser._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    res.status(200).json({ result: currentUser, token });
+    res.status(200).json({ result: currentUser });
   } catch (error) {
     res.status(500).json({ message: 'Something went wrong.' });
   }
 }
 
 export const signup = async (req, res) => {
-  const { firstname, lastname, email, password, confirmPassword } = req.body;
+  const { username, email, password } = req.body;
 
   try {
-    const existingUser = await user.findOne({ email });
+    const currentUser = await user.findOne({ email });
 
-    if(existingUser) return request.status(400).json({ message: 'User already exists' });
-
-    if(password !== confirmPassword) return request.status(400).json({ message: 'Password is incorrect' });
+    if(currentUser) return res.status(400).json({ message: 'User already exists' });
 
     /* `const hashedPassword = await bcrypt.hash(password, 12);` is using the `bcryptjs` library to
     hash the user's password with a salt of 12 rounds. The hashed password is then stored in the
@@ -49,11 +47,11 @@ export const signup = async (req, res) => {
     `lastname` variables) are passed as an object to the `create` method. The `await` keyword is
     used to wait for the database operation to complete before assigning the result to the `result`
     variable. */
-    const result = await user.create({ email, password: hashedPassword, name: `${firstname} ${lastname}` });
+    const result = await user.create({ email, password: hashedPassword, username });
 
-    const token = jwt.sign({ email: result.email, id: result._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    // const token = jwt.sign({ email: result.email, id: result._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
-    res.status(200).json({ result, token });
+    res.status(200).json({ result });
   } catch (error) {
     res.status(500).json({ message: 'Something went wrong.' });
   }
