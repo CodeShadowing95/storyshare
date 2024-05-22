@@ -2,9 +2,15 @@
 import { useState } from "react"
 import { logo, signupBanner } from "../assets"
 import { signup } from "../services/user-service"
+import { avatars } from "../constants";
+
+const randomAvatar = () => {
+  return avatars[Math.floor(Math.random() * avatars.length)];
+}
 
 const Signup = ({ onPanelSwitch, onError, onSuccess }) => {
-  const [formData, setFormData] = useState({ username: '', email: '', password: '', confirmPassword: '' })
+  const avatar = randomAvatar();
+  const [formData, setFormData] = useState({ username: '', email: '', password: '', confirmPassword: '', imgProfile: avatar });
 
   const register = async (e) => {
     e.preventDefault();

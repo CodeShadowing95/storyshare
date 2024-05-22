@@ -12,6 +12,10 @@
   box-sizing: border-box;
 }
 
+body {
+  padding: 0 5rem; 
+}
+
 body::-webkit-scrollbar {
   width: 5px;
 }
@@ -29,6 +33,15 @@ body::-webkit-scrollbar-thumb {
   .flex-between {
     @apply flex justify-between items-center;
   }
+}
+
+.custom_scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.custom_scrollbar::-webkit-scrollbar-thumb {
+  background-color: #a3a3a3;
+  border-radius: 5px;
 }
 
 .card-container {

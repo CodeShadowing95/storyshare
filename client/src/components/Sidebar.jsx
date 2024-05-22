@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { barragan, coyote, grimmjow, logo, logo_svg, szayel, ulquiorra } from "../assets";
 import { menus } from "../constants";
 
@@ -8,7 +8,8 @@ const Sidebar = ({ user }) => {
   const [toggleDropdown, setToggleDropdown] = useState(false);
   const [selected, setSelected] = useState("feed");
   const navigate = useNavigate();
-  const profile = user?.result;
+  const location = useLocation();
+  const {result: profile} = user;
 
   const goToPage = (page) => {
     setToggleDropdown(false);
@@ -21,8 +22,12 @@ const Sidebar = ({ user }) => {
     navigate("/auth");
   }
 
+  useEffect(() => {
+    setSelected(location.pathname.split("/")[1]);
+  }, [location]);
+
   return (
-    <nav className="sticky top-0 left-0 pt-8 flex flex-col h-[100dvh] w-fit justify-between items-center max-sm:hidden lg:w-[300px] border-r">
+    <nav className="sticky top-0 left-0 pt-8 flex flex-col h-[100dvh] w-fit justify-between items-center max-sm:hidden lg:w-[300px] border-r shadow-lg">
       <div className="w-full flex flex-col justify-center items-center gap-6">
         {/* Logo, User profile, menus */}
         <div className="flex flex-col justify-center items-center gap-2 w-full">
@@ -34,7 +39,7 @@ const Sidebar = ({ user }) => {
             </div>
             {/* Logo2 */}
             <div className="w-[60px] h-[60px] rounded-full overflow-hidden -ml-2">
-              <img src={ulquiorra} alt="user" className="w-full h-full object-cover" />
+              <img src={profile?.imgProfile ? profile?.imgProfile : ulquiorra} alt="user" className="w-full h-full object-cover" />
             </div>
           </div>
           <div className="w-full relative z-20">
@@ -46,7 +51,7 @@ const Sidebar = ({ user }) => {
         </div>
 
         {/* Menus */}
-        <div className="flex flex-col justify-center items-center gap-2 w-full px-8">
+        <div className="flex flex-col justify-center items-center gap-2 w-full px-4">
           {menus.map((menu) => (
             <div key={menu.id} className={`w-full p-2 flex justify-between items-center border rounded-xl cursor-pointer ${menu.link === selected ? 'bg-zinc-900 text-white' : 'hover:bg-sky-100'}`} onClick={() => goToPage(menu.link)}>
               <div className="flex center items-center gap-1 w-full">

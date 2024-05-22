@@ -1,15 +1,38 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Post from "../components/Post"
+import { getPosts } from "../services/post-service";
+import { loader } from "../assets";
+import { fetchUser, shuffle } from "../utils";
 
 const Feed = () => {
+  const { result: user} = fetchUser();
+  const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const navigate = useNavigate();
 
   const navigateTo = (page) => {
     navigate(`/${page}`);
   }
 
+  useEffect(() => {
+    getPosts()
+    .then((response) => {
+      const { data } = response.data;
+      const datas = shuffle(data);
+      setPosts(datas);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      setIsLoading(false);
+    })
+  }, [])
+
   return (
-    <section className="w-[calc(100vw-300px)] min-h-screen flex px-4 pt-10">
+    <section className="w-[calc(100vw-300px)] min-h-screen flex pt-10">
       {/* Feed */}
       <div className="w-[calc(100%-300px)] h-full flex flex-col gap-4 px-4">
         <div className="w-full flex justify-between items-center">
@@ -25,7 +48,7 @@ const Feed = () => {
         {/* Add a post */}
         <div className="w-full p-4 flex justify-between items-center rounded-xl bg-gray-50 border-2 mb-4">
           <div className="flex flex-col justify-center gap-2">
-            <h1 className="text-2xl font-bold">Salut, Ulquiorra 👋</h1>
+            <h1 className="text-2xl font-bold">Salut, {user.username.split(" ")[0]} 👋</h1>
             <p className="text-sm text-gray-500">Qu{`'`}est-ce que tu veux nous partager aujourd{`'`}hui ?</p>
           </div>
           
@@ -33,13 +56,13 @@ const Feed = () => {
             <div className="flex justify-center items-center rounded-lg p-1 cursor-pointer shadow-lg transition-all" style={{ background: "linear-gradient(132deg, rgb(2, 106, 122) 0.00%, rgb(242, 78, 163) 100.00%)" }} onClick={() => navigateTo("create-post")}>
               <div className="flex justify-center items-center rounded-lg gap-1 p-2 bg-gray-800 transition-all hover:bg-gray-900">
                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="#ffffff" d="M19 21H5q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21m-1-4H6v1.5h12zM6 15.5h12V14H6zM6 12h12V6H6zm0 5v1.5zm0-1.5V14zM6 12V6zm0 2v-2zm0 3v-1.5z"/></svg>
-                <p className="text-sm text-white font-semibold">Nouveau post</p>
+                <p className="text-[13px] text-white font-semibold">Nouveau post</p>
               </div>
             </div>
             <div className="flex justify-center items-center rounded-lg p-1 cursor-pointer shadow-lg transition-all" style={{ background: "linear-gradient(132deg, rgb(2, 106, 122) 0.00%, rgb(242, 78, 163) 100.00%)" }}>
               <div className="flex justify-center items-center rounded-lg gap-1 p-2 bg-gray-800 transition-all hover:bg-gray-900">
                 <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="#ffffff" d="M5.5 16V8a3 3 0 0 0-3-3a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5a3 3 0 0 0 3-3m13-8v8a3 3 0 0 0 3 3a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5a3 3 0 0 0-3 3" opacity=".5"/><path fill="#ffffff" d="M11.5 19c-1.886 0-2.828 0-3.414-.586C7.5 17.828 7.5 16.886 7.5 15V9c0-1.886 0-2.828.586-3.414C8.672 5 9.614 5 11.5 5h1c1.886 0 2.828 0 3.414.586c.586.586.586 1.528.586 3.414v6c0 1.886 0 2.828-.586 3.414C15.328 19 14.386 19 12.5 19z"/></svg>
-                <p className="text-sm text-white font-semibold">Nouvelle story</p>
+                <p className="text-[13px] text-white font-semibold">Nouvelle story</p>
               </div>
             </div>
           </div>
@@ -47,8 +70,25 @@ const Feed = () => {
 
         {/* Posts */}
         <div className="w-full flex flex-col gap-2">
-          {/* Post example */}
-          <Post />
+          {/* <Post /> */}
+          {isLoading ?
+            <div className="w-full flex justify-center items-center gap-2">
+              <img src={loader} alt="loader" width="25" height="25" />
+              <p className="text-sm font-medium">Recherche de nouveaux posts...</p>
+            </div>
+            :
+            posts.length === 0 ?
+              <div className="w-full h-[calc(100vh-220px)] flex flex-col justify-center items-center gap-4 bg-gray-100 border-[5px] border-dashed border-gray-300 rounded-lg">
+                <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Pensive%20Face.png" alt="Pensive Face" width="100" height="100" />
+                <h1 className="text-3xl font-extrabold text-gray-400">Fil d{`'`}actualités vide!</h1>
+                <p className="text-sm font-light text-gray-400">Aucun post pour le moment</p>
+              </div>
+            :
+            posts.map((post) => (
+              // eslint-disable-next-line react/jsx-key
+              <Post post={post} />
+            ))
+          }
         </div>
       </div>
 
@@ -150,7 +190,7 @@ const Feed = () => {
 
         {/* Recommandations */}
         <div className="w-full flex-col gap-2 mb-8">
-          <p className="text-base font-extrabold mb-3">Recommandations</p>
+          <p className="text-base font-extrabold mb-3">Recommendations</p>
           {/* If suggestions empty */}
           <div className="w-full h-[200px] flex flex-col justify-center items-center border-dashed border-2 rounded-sm bg-gray-100">
             <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><path fill="#a0a0a0" d="M0 18v-1.575q0-1.075 1.1-1.75T4 14q.325 0 .625.013t.575.062q-.35.525-.525 1.1t-.175 1.2V18zm6 0v-1.625q0-.8.438-1.463t1.237-1.162T9.588 13T12 12.75q1.325 0 2.438.25t1.912.75t1.225 1.163t.425 1.462V18zm13.5 0v-1.625q0-.65-.162-1.225t-.488-1.075q.275-.05.563-.062T20 14q1.8 0 2.9.663t1.1 1.762V18zM4 13q-.825 0-1.412-.587T2 11q0-.85.588-1.425T4 9q.85 0 1.425.575T6 11q0 .825-.575 1.413T4 13m16 0q-.825 0-1.412-.587T18 11q0-.85.588-1.425T20 9q.85 0 1.425.575T22 11q0 .825-.575 1.413T20 13m-8-1q-1.25 0-2.125-.875T9 9q0-1.275.875-2.137T12 6q1.275 0 2.138.863T15 9q0 1.25-.862 2.125T12 12"/></svg>

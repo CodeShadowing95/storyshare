@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Editor, Tag } from "../components"
-import { fetchUser } from "../services/fetchUser";
+import { fetchUser } from "../utils";
 import { createPost } from "../services/post-service";
 import { useNavigate } from "react-router-dom";
 
@@ -10,6 +10,7 @@ const NewPost = () => {
   const [editorDatas, setEditorDatas] = useState({});
   const [tagDatas, setTagDatas] = useState([]);
   const [error, setError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
   
@@ -25,11 +26,14 @@ const NewPost = () => {
       return;
     }
 
+    setIsLoading(true);
+
     setError(false);
     const formData = {
       postText: editorDatas.message,
       description,
-      creator: user,
+      creator: user.username,
+      creatorAvatar: user.imgProfile,
       images: editorDatas.pictures,
       tags: tagDatas
     }
@@ -45,6 +49,8 @@ const NewPost = () => {
       setEditorDatas({});
       setTagDatas({});
 
+      setIsLoading(false);
+
       navigate("/feed");
     })
   }
@@ -59,7 +65,15 @@ const NewPost = () => {
             <p className="text-xl font-extrabold mb-1">Nouveau post</p>
             <p className="text-sm text-gray-500">Aventure, challenge, découverte, idée,... Partagez votre histoire</p>
           </div>
-          <button type="submit" className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 shadow-lg shadow-blue-500/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-2" onClick={handleSubmit}>Publier</button>
+          <button type="submit" className={`relative flex items-center gap-2 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 shadow-lg shadow-blue-500/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-2 disabled:cursor-not-allowed`} disabled={isLoading} onClick={handleSubmit}>
+            Publier
+            {isLoading &&
+              <>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><rect width="6" height="14" x="1" y="4" fill="#ffffff"><animate id="svgSpinnersBarsScaleFade0" fill="freeze" attributeName="y" begin="0;svgSpinnersBarsScaleFade1.end-0.25s" dur="0.75s" values="1;5"/><animate fill="freeze" attributeName="height" begin="0;svgSpinnersBarsScaleFade1.end-0.25s" dur="0.75s" values="22;14"/><animate fill="freeze" attributeName="opacity" begin="0;svgSpinnersBarsScaleFade1.end-0.25s" dur="0.75s" values="1;.2"/></rect><rect width="6" height="14" x="9" y="4" fill="#ffffff" opacity=".4"><animate fill="freeze" attributeName="y" begin="svgSpinnersBarsScaleFade0.begin+0.15s" dur="0.75s" values="1;5"/><animate fill="freeze" attributeName="height" begin="svgSpinnersBarsScaleFade0.begin+0.15s" dur="0.75s" values="22;14"/><animate fill="freeze" attributeName="opacity" begin="svgSpinnersBarsScaleFade0.begin+0.15s" dur="0.75s" values="1;.2"/></rect><rect width="6" height="14" x="17" y="4" fill="#ffffff" opacity=".3"><animate id="svgSpinnersBarsScaleFade1" fill="freeze" attributeName="y" begin="svgSpinnersBarsScaleFade0.begin+0.3s" dur="0.75s" values="1;5"/><animate fill="freeze" attributeName="height" begin="svgSpinnersBarsScaleFade0.begin+0.3s" dur="0.75s" values="22;14"/><animate fill="freeze" attributeName="opacity" begin="svgSpinnersBarsScaleFade0.begin+0.3s" dur="0.75s" values="1;.2"/></rect></svg>
+              <div className="absolute inset-0 bg-white/50"></div>
+              </>
+            }
+          </button>
         </div>
 
         {/* Content */}
@@ -77,11 +91,11 @@ const NewPost = () => {
       </div>
 
       {/* Preview */}
-      <div className="w-[30%] max-h-[calc(100vh-70px)] p-4 border-2 rounded-xl shadow-lg">
-        <div className="pb-1 border-b-4 border-b-yellow-500 mb-4">
+      <div className="w-[30%] max-h-[calc(100vh-50px)] flex flex-col p-4 border-2 rounded-xl">
+        <div className="pb-1 border-b-4 border-b-yellow-500 mb-10">
           <p className="text-xl font-extrabold">Aperçu</p>
         </div>
-        <div className="w-full max-h-[90%] mt-8 overflow-auto">
+        <div className="w-full max-h-[90%] p-2 rounded-xl shadow-lg border overflow-auto custom_scrollbar">
           {/* Header */}
           <div className="flex justify-between items-center">
             {/* Avatar & Username */}
@@ -108,12 +122,54 @@ const NewPost = () => {
               :
               <p className="text-xs font-medium">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eligendi illo fugiat fugit reprehenderit odio temporibus quibusdam dolorum nobis.</p>
             }
-
-            {editorDatas.pictures?.length === 0 &&
+            
+            <div className="relative w-full">
+              {editorDatas.pictures?.length ?
+                editorDatas.pictures?.length <= 4 ?
+                <div className={`w-full grid ${editorDatas.pictures?.length === 1 ? 'grid-cols-1' : 'grid-cols-2'} gap-0.5`}>
+                  {editorDatas.pictures.map((image, index) => (
+                    <div key={index} className="h-full overflow-hidden">
+                      <img src={image.src} alt="post" className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+                :
+                <>
+                <div className={`w-full grid grid-cols-2 gap-0.5`}>
+                  <div className="h-full relative overflow-hidden">
+                    <img src="/uefa.jpg" alt="post" className="w-full h-full object-cover" />
+                    {/* <img src={posts.images[0].src} alt="post" className="w-full h-full object-cover" /> */}
+                  </div>
+                  <div className="h-full relative overflow-hidden">
+                    <img src="/uefa.jpg" alt="post" className="w-full h-full object-cover" />
+                    {/* <img src={posts.images[1].src} alt="post" className="w-full h-full object-cover" /> */}
+                  </div>
+                  <div className="h-full relative overflow-hidden">
+                    <img src="/uefa.jpg" alt="post" className="w-full h-full object-cover" />
+                    {/* <img src={posts.images[2].src} alt="post" className="w-full h-full object-cover" /> */}
+                  </div>
+                  <div className="h-full relative overflow-hidden">
+                    <img src="/uefa.jpg" alt="post" className="w-full h-full object-cover" />
+                    {/* <img src={posts.images[3].src} alt="post" className="w-full h-full object-cover" /> */}
+                    <div className="absolute inset-0 bg-black/60">
+                      <div className="w-full h-full flex justify-center items-center">
+                        <p className="text-base font-bold text-white">+{editorDatas.pictures?.length - 4} image(s)</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                </>
+                :
+                <div className="relative w-full">
+                  <img src="/uefa.jpg" alt="model" className="w-full h-full object-cover" />
+                </div>
+              }
+            </div>
+            {/* {editorDatas.pictures?.length === 0 &&
               <div className="relative w-full h-[200px]">
                 <img src="/uefa.jpg" alt="model" className="w-full h-full object-cover" />
               </div>
-            }
+            } */}
 
             {/* {editorDatas.pictures?.length > 0 &&
               <div className="relative w-full grid grid-cols-2 h-[200px]">

@@ -5,6 +5,7 @@ const postSchema = mongoose.Schema({
   postText: String,
   description: String,
   creator: String,
+  creatorAvatar: { type: String, default: "" },
   images: [
     {
       id: String,

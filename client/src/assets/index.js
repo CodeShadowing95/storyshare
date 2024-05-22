@@ -21,6 +21,8 @@ import notification from './icons/notification.svg';
 import post from './icons/post.svg';
 import story from './icons/story.svg';
 
+import loader from './loader.svg';
+
 export {
   logo_svg,
   logo,
@@ -43,4 +45,5 @@ export {
   signupBanner,
   imgModel1,
   imgModel2,
+  loader,
 };

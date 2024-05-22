@@ -65,7 +65,7 @@ const Tag = ({ setTagDatas }) => {
         <div className="w-full flex flex-wrap mt-2 gap-1">
           {tags.map((tag) => (
             <div key={tag} className="flex items-center py-1 pl-2 pr-1 bg-gray-200 rounded-lg gap-2">
-              <p className="text-xs font-bold">{tag}</p>
+              <p className="text-xs font-bold">{tag.toLowerCase().split(' ').join('')}</p>
               <div className="cursor-pointer p-1 hover:bg-gray-300 rounded-lg" onClick={() => removeTag(tag)}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path fill="#ef4444" d="m8.4 17l3.6-3.6l3.6 3.6l1.4-1.4l-3.6-3.6L17 8.4L15.6 7L12 10.6L8.4 7L7 8.4l3.6 3.6L7 15.6zm3.6 5q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22m0-2q3.35 0 5.675-2.325T20 12t-2.325-5.675T12 4T6.325 6.325T4 12t2.325 5.675T12 20m0-8"/></svg>
               </div>

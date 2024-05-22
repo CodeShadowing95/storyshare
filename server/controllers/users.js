@@ -28,7 +28,7 @@ export const signin = async (req, res) => {
 }
 
 export const signup = async (req, res) => {
-  const { username, email, password } = req.body;
+  const { username, email, password, imgProfile } = req.body;
 
   try {
     const currentUser = await user.findOne({ email });
@@ -47,7 +47,7 @@ export const signup = async (req, res) => {
     `lastname` variables) are passed as an object to the `create` method. The `await` keyword is
     used to wait for the database operation to complete before assigning the result to the `result`
     variable. */
-    const result = await user.create({ email, password: hashedPassword, username });
+    const result = await user.create({ email, password: hashedPassword, username, imgProfile });
 
     // const token = jwt.sign({ email: result.email, id: result._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 

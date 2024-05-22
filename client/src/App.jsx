@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom'
 import Home from './pages/Home.jsx'
 import Auth from './pages/Auth.jsx';
-import { fetchUser } from './services/fetchUser';
+import { fetchUser } from './utils';
 
 const App = () => {
   const navigate = useNavigate();
