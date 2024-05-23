@@ -1,18 +1,28 @@
-import { useState } from "react";
+/* eslint-disable react/prop-types */
+import { useEffect, useState } from "react";
 import { Editor, Tag } from "../components"
 import { fetchUser } from "../utils";
-import { createPost } from "../services/post-service";
-import { useNavigate } from "react-router-dom";
+import { createPost, getPost, updatePost } from "../services/post-service";
+import { useLocation, useNavigate } from "react-router-dom";
+import { loader } from "../assets";
 
-const NewPost = () => {
+const NewPost = ({ onSuccess }) => {
   const {result: user} = fetchUser();
+  // For creating a new post
   const [description, setDescription] = useState('');
   const [editorDatas, setEditorDatas] = useState({});
   const [tagDatas, setTagDatas] = useState([]);
+
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  // For editing a post
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location?.search);
+  const postId = searchParams.get("post");
+  const [isLoaded, setIsLoaded] = useState(false);
   
   const handleChange = (e) => {
     setDescription(e.target.value);
@@ -21,14 +31,40 @@ const NewPost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if(location.pathname === "/edit-post") {
+      const formData = {
+        postText: editorDatas.message,
+        description,
+        creator: user.username,
+        images: editorDatas.pictures,
+        tags: tagDatas
+      }
+
+      await updatePost(`${postId}`, formData)
+      .then((response) => {
+        if(response.error) {
+          console.log(response.error);
+          return;
+        }
+
+        onSuccess(true);
+        navigate("/feed");
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      return;
+    }
+
+
     if(!editorDatas.message) {
       setError(true);
       return;
     }
 
     setIsLoading(true);
-
     setError(false);
+
     const formData = {
       postText: editorDatas.message,
       description,
@@ -38,7 +74,7 @@ const NewPost = () => {
       tags: tagDatas
     }
 
-    await createPost("/create-post", formData)
+    await createPost("create-post", formData)
     .then((response) => {
       if (response.error) {
         console.log(response.error);
@@ -55,33 +91,63 @@ const NewPost = () => {
     })
   }
 
+  useEffect(() => {
+    if(postId) {
+      setIsLoaded(true);
+      getPost(`${postId}`)
+      .then((response) => {
+        const { data } = response;
+        setEditorDatas({ message: data.postText, pictures: data.images });
+        setTagDatas(data.tags);
+        setDescription(data.description);
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+      .finally(() => {
+        setIsLoaded(false);
+      })
+    }
+  }, [postId]);
+
 
   return (
-    <section className="w-[calc(100vw-300px)] min-h-screen flex px-8 pt-10 gap-4 relative overflow-hidden">
+    <section className="w-[calc(100vw-300px)] min-h-screen flex px-8 pt-10 mb-8 gap-4 relative overflow-hidden">
+      {location.pathname === "/edit-post" && isLoaded && (
+        /* White overlay */
+        <div className="absolute inset-0 flex justify-center items-center bg-white/70 z-20">
+          <img src={loader} alt="loader" width="40" height="40" />
+          <p className="text-lg font-medium">Chargement...</p>
+        </div>
+      )}
+
       <div className="w-[70%] h-full flex flex-col gap-4">
         {/* Title */}
         <div className="w-full flex justify-between">
           <div>
-            <p className="text-xl font-extrabold mb-1">Nouveau post</p>
-            <p className="text-sm text-gray-500">Aventure, challenge, découverte, idée,... Partagez votre histoire</p>
+            <p className="text-xl font-extrabold mb-1">{location.pathname === "/create-post" ? "Nouveau post" : "Modifier le post"}</p>
+            <p className="text-sm text-gray-500">{location.pathname === "/create-post" ? "Aventure, challenge, découverte, idée,... Partagez votre histoire" : "Une erreur dans votre post ? ... Modifiez le à tout moment"}</p>
           </div>
-          <button type="submit" className={`relative flex items-center gap-2 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 shadow-lg shadow-blue-500/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-2 disabled:cursor-not-allowed`} disabled={isLoading} onClick={handleSubmit}>
-            Publier
-            {isLoading &&
-              <>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><rect width="6" height="14" x="1" y="4" fill="#ffffff"><animate id="svgSpinnersBarsScaleFade0" fill="freeze" attributeName="y" begin="0;svgSpinnersBarsScaleFade1.end-0.25s" dur="0.75s" values="1;5"/><animate fill="freeze" attributeName="height" begin="0;svgSpinnersBarsScaleFade1.end-0.25s" dur="0.75s" values="22;14"/><animate fill="freeze" attributeName="opacity" begin="0;svgSpinnersBarsScaleFade1.end-0.25s" dur="0.75s" values="1;.2"/></rect><rect width="6" height="14" x="9" y="4" fill="#ffffff" opacity=".4"><animate fill="freeze" attributeName="y" begin="svgSpinnersBarsScaleFade0.begin+0.15s" dur="0.75s" values="1;5"/><animate fill="freeze" attributeName="height" begin="svgSpinnersBarsScaleFade0.begin+0.15s" dur="0.75s" values="22;14"/><animate fill="freeze" attributeName="opacity" begin="svgSpinnersBarsScaleFade0.begin+0.15s" dur="0.75s" values="1;.2"/></rect><rect width="6" height="14" x="17" y="4" fill="#ffffff" opacity=".3"><animate id="svgSpinnersBarsScaleFade1" fill="freeze" attributeName="y" begin="svgSpinnersBarsScaleFade0.begin+0.3s" dur="0.75s" values="1;5"/><animate fill="freeze" attributeName="height" begin="svgSpinnersBarsScaleFade0.begin+0.3s" dur="0.75s" values="22;14"/><animate fill="freeze" attributeName="opacity" begin="svgSpinnersBarsScaleFade0.begin+0.3s" dur="0.75s" values="1;.2"/></rect></svg>
-              <div className="absolute inset-0 bg-white/50"></div>
-              </>
-            }
-          </button>
+          <div className="flex gap-2">
+            <button type="submit" className={`relative flex items-center font-medium rounded-lg text-sm text-gray-600 hover:bg-gray-100 px-5 py-2.5 text-center mb-2 border border-gray-600`} onClick={() => navigate("/feed")}>Annuler</button>
+            <button type="submit" className={`relative flex items-center gap-2 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 shadow-lg shadow-blue-500/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-2 disabled:cursor-not-allowed`} disabled={isLoading} onClick={handleSubmit}>
+              {location.pathname === "/create-post" ? "Publier" : "Republier"}
+              {isLoading &&
+                <>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><rect width="6" height="14" x="1" y="4" fill="#ffffff"><animate id="svgSpinnersBarsScaleFade0" fill="freeze" attributeName="y" begin="0;svgSpinnersBarsScaleFade1.end-0.25s" dur="0.75s" values="1;5"/><animate fill="freeze" attributeName="height" begin="0;svgSpinnersBarsScaleFade1.end-0.25s" dur="0.75s" values="22;14"/><animate fill="freeze" attributeName="opacity" begin="0;svgSpinnersBarsScaleFade1.end-0.25s" dur="0.75s" values="1;.2"/></rect><rect width="6" height="14" x="9" y="4" fill="#ffffff" opacity=".4"><animate fill="freeze" attributeName="y" begin="svgSpinnersBarsScaleFade0.begin+0.15s" dur="0.75s" values="1;5"/><animate fill="freeze" attributeName="height" begin="svgSpinnersBarsScaleFade0.begin+0.15s" dur="0.75s" values="22;14"/><animate fill="freeze" attributeName="opacity" begin="svgSpinnersBarsScaleFade0.begin+0.15s" dur="0.75s" values="1;.2"/></rect><rect width="6" height="14" x="17" y="4" fill="#ffffff" opacity=".3"><animate id="svgSpinnersBarsScaleFade1" fill="freeze" attributeName="y" begin="svgSpinnersBarsScaleFade0.begin+0.3s" dur="0.75s" values="1;5"/><animate fill="freeze" attributeName="height" begin="svgSpinnersBarsScaleFade0.begin+0.3s" dur="0.75s" values="22;14"/><animate fill="freeze" attributeName="opacity" begin="svgSpinnersBarsScaleFade0.begin+0.3s" dur="0.75s" values="1;.2"/></rect></svg>
+                <div className="absolute inset-0 bg-white/50"></div>
+                </>
+              }
+            </button>
+          </div>
         </div>
 
         {/* Content */}
         <div className="w-full h-full flex justify-center items-center gap-4">
           {/* Left */}
           <form className="w-full h-full">
-            <Editor setEditorDatas={setEditorDatas} />
-            <Tag setTagDatas={setTagDatas} />
+            <Editor setEditorDatas={setEditorDatas} data={postId && editorDatas} />
+            <Tag setTagDatas={setTagDatas} data={postId && tagDatas} />
             <div className="w-full">
               <label htmlFor="message" className="block mb-2 text-sm font-medium text-gray-900">Description</label>
               <textarea id="message" rows="3" name="sometext" value={description} className="block p-2.5 w-full text-[13px] text-gray-900 rounded-lg border border-gray-200 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Informations supplémentaires...(Optionnel)" onChange={handleChange}></textarea>

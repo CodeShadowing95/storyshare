@@ -2,6 +2,25 @@ import mongoose from "mongoose";
 import PostMessage from "../models/post.js";
 
 
+export const shuffle = (array) => {
+  let currentIndex = array.length;
+
+  // While there remain elements to shuffle...
+  while (currentIndex != 0) {
+
+    // Pick a remaining element...
+    let randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+
+  return array;
+}
+
+
 /**
  * This code defines an asynchronous function getPosts that retrieves a list of posts from the database.
  * It uses PostMessage.find() to fetch posts, sorts them in descending order by _id, and sends the posts as a JSON response with status 200.
@@ -16,6 +35,7 @@ export const getPosts = async (req, res) => {
   try {
     const posts = await PostMessage.find();
 
+    shuffle(posts);
     res.status(200).json({ data: posts });
   } catch (error) {
     res.status.json({ message: error.message });

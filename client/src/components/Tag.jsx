@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-const Tag = ({ setTagDatas }) => {
+const Tag = ({ setTagDatas, data }) => {
   const [tag, setTag] = useState('')
   const [tags, setTags] = useState([])
   const [tagError, setTagError] = useState(false)
@@ -26,6 +26,10 @@ const Tag = ({ setTagDatas }) => {
     setTags(tags.filter((t) => t !== tag))
     setTagDatas(tags.filter((t) => t !== tag))
   }
+
+  useEffect(() => {
+    data && setTags(data)
+  }, [data])
 
   // const handleKeyPress = (e) => {
   //   if (e.key === 'Enter') {

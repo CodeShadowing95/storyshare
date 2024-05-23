@@ -27,7 +27,7 @@ specific URL path that includes an `id` parameter. When a PATCH request is made 
 a response. This route is typically used for updating an existing resource on the server. The `id`
 parameter in the URL path allows the server to identify which resource to update. */
 // router.patch('/:id', auth, updatePost);
-router.patch('/:id', updatePost);
+router.patch('/update-post/:id', updatePost);
 
 /* `router.delete('/:id', deletePost);` is defining a route for handling HTTP DELETE requests to a
 specific URL path that includes an `id` parameter. When a DELETE request is made to this path, the
@@ -35,7 +35,7 @@ specific URL path that includes an `id` parameter. When a DELETE request is made
 a response. This route is typically used for deleting an existing resource on the server. The `id`
 parameter in the URL path allows the server to identify which resource to delete. */
 // router.delete('/:id', auth, deletePost);
-router.delete('/:id', deletePost);
+router.delete('/delete-post/:id', deletePost);
 
 /* `router.patch('/:id/likePost', likePost);` is defining a route for handling HTTP PATCH requests to a
 specific URL path that includes an `id` parameter and the string "likePost". When a PATCH request is
@@ -44,6 +44,6 @@ the request and send a response. This route is typically used for updating the "
 existing resource on the server. The `id` parameter in the URL path allows the server to identify
 which resource to update. */
 // router.patch('/:id/likePost', auth, likePost);
-router.patch('/:id/likePost', likePost);
+router.patch('/post/:id', likePost);
 
 export default router;

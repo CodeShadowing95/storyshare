@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 
-const Editor = ({ setEditorDatas }) => {
+const Editor = ({ setEditorDatas, data }) => {
   const [images, setImages] = useState([]);
-  const [datasEditor, setDatasEditor] = useState({ message: '', pictures: images });
+  const [datasEditor, setDatasEditor] = useState({ message: !data?.message ? '' : data.message, pictures: images });
 
   const handleChange = (e) => {
     setDatasEditor({ ...datasEditor, [e.target.name]: e.target.value });
@@ -36,6 +36,14 @@ const Editor = ({ setEditorDatas }) => {
   useEffect(() => {
     setEditorDatas(datasEditor);
   }, [datasEditor, setEditorDatas]);
+
+  useEffect(() => {
+    data &&
+    setTimeout(() => {
+      data.pictures?.length > 0 && setImages(data.pictures);
+    })
+  }, [data]);
+
 
   return (
     <div className="w-full mb-4 rounded-lg">
@@ -78,14 +86,15 @@ const Editor = ({ setEditorDatas }) => {
             <div className="tooltip-arrow" data-popper-arrow></div>
           </div>
         </div>
+        
         <div className="px-4 py-2 bg-white rounded-b-lg">
           <label htmlFor="editor" className="sr-only">Publish post</label>
-          <textarea name="message" id="editor" rows="8" value={datasEditor.message} className="block w-full px-0 text-sm text-gray-800 bg-white border-0 focus:outline-none" placeholder="Qu'avez-vous en tête..." required onChange={e => handleChange(e)}></textarea>
+          <textarea name="message" id="editor" rows="8" value={data ? data.message : datasEditor.message} className="block w-full px-0 text-sm text-gray-800 bg-white border-0 focus:outline-none" placeholder="Qu'avez-vous en tête..." required onChange={e => handleChange(e)}></textarea>
         </div>
       </div>
 
       {/* Images */}
-      {images.length > 0 &&
+      {images?.length > 0 &&
         <div className="w-full flex flex-wrap gap-2 rounded-lg">
           {images.map(image => (
             <div key={image.id} className="border w-[150px] h-[100px] rounded-lg p-2 relative">

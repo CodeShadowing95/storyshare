@@ -1,14 +1,17 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Post from "../components/Post"
 import { getPosts } from "../services/post-service";
 import { loader } from "../assets";
-import { fetchUser, shuffle } from "../utils";
+import { fetchUser } from "../utils";
 
-const Feed = () => {
+const Feed = ({ onSuccess }) => {
   const { result: user} = fetchUser();
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedPost, setSelectedPost] = useState("")
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const navigate = useNavigate();
 
@@ -20,8 +23,7 @@ const Feed = () => {
     getPosts()
     .then((response) => {
       const { data } = response.data;
-      const datas = shuffle(data);
-      setPosts(datas);
+      setPosts(data);
     })
     .catch((error) => {
       console.log(error);
@@ -31,8 +33,32 @@ const Feed = () => {
     })
   }, [])
 
+  useEffect(() => {
+    if(isSuccess === false) return;
+    setIsSuccess(onSuccess);
+    setTimeout(() => {
+      setIsSuccess(false);
+    }, 3000)
+  }, [isSuccess, onSuccess])
+
+
+
   return (
-    <section className="w-[calc(100vw-300px)] min-h-screen flex pt-10">
+    <section className="w-[calc(100vw-300px)] min-h-screen flex pt-10 relative overflow-hidden">
+      {/* Success message */}
+      <div className={`fixed top-24 left-[40%] z-20 ${isSuccess ? "translate-y-0" : "-translate-y-[200%]"} transition-all rounded-xl`}>
+        <div className="w-[300px] flex flex-col justify-center items-center gap-1 rounded-lg bg-green-50 p-4 shadow-2xl relative">
+          <div className="absolute top-1 right-2 rounded-lg border" onClick={() => setIsSuccess(false)}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24"><path fill="#16a34a" d="m8.4 17l3.6-3.6l3.6 3.6l1.4-1.4l-3.6-3.6L17 8.4L15.6 7L12 10.6L8.4 7L7 8.4l3.6 3.6L7 15.6zm3.6 5q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22"/></svg>
+          </div>
+
+          <svg xmlns="http://www.w3.org/2000/svg" className="mb-4" width="40" height="40" viewBox="0 0 448 512"><path fill="#16a34a" d="M342.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 178.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l80 80c12.5 12.5 32.8 12.5 45.3 0zm96 128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 402.7L54.6 297.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l256-256z"/></svg>
+          <p className="text-lg font-bold mb-2">Yay !</p>
+          <p className="text-sm font-medium text-gray-500 mb-8">Votre post a bien été créé/modifié.</p>
+          <div className="text-sm font-extrabold text-green-500 hover:text-green-600 transition-colors cursor-pointer" onClick={() => setIsSuccess(false)}>OK, COOL</div>
+        </div>
+      </div>
+
       {/* Feed */}
       <div className="w-[calc(100%-300px)] h-full flex flex-col gap-4 px-4">
         <div className="w-full flex justify-between items-center">
@@ -46,7 +72,7 @@ const Feed = () => {
         </div>
         
         {/* Add a post */}
-        <div className="w-full p-4 flex justify-between items-center rounded-xl bg-gray-50 border-2 mb-4">
+        <div className="w-full p-4 flex justify-between items-center rounded-xl bg-gradient-to-tr from-[#f4f4f5] to-[#e4e4e7] border-2 mb-4 shadow-lg">
           <div className="flex flex-col justify-center gap-2">
             <h1 className="text-2xl font-bold">Salut, {user.username.split(" ")[0]} 👋</h1>
             <p className="text-sm text-gray-500">Qu{`'`}est-ce que tu veux nous partager aujourd{`'`}hui ?</p>
@@ -84,9 +110,9 @@ const Feed = () => {
                 <p className="text-sm font-light text-gray-400">Aucun post pour le moment</p>
               </div>
             :
-            posts.map((post) => (
+            posts.map((post, index) => (
               // eslint-disable-next-line react/jsx-key
-              <Post post={post} />
+              <Post id={index} post={post} onSetId={setSelectedPost} selectedId={selectedPost} />
             ))
           }
         </div>

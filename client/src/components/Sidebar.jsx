@@ -27,7 +27,7 @@ const Sidebar = ({ user }) => {
   }, [location]);
 
   return (
-    <nav className="sticky top-0 left-0 pt-8 flex flex-col h-[100dvh] w-fit justify-between items-center max-sm:hidden lg:w-[300px] border-r shadow-lg">
+    <nav className="sticky top-0 left-0 pt-8 flex flex-col h-[100dvh] w-fit justify-between items-center max-sm:hidden lg:w-[300px] border-r">
       <div className="w-full flex flex-col justify-center items-center gap-6">
         {/* Logo, User profile, menus */}
         <div className="flex flex-col justify-center items-center gap-2 w-full">

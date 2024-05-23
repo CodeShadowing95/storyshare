@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { ulquiorra } from '../assets';
 import { fetchUser } from '../utils';
 import Dropdown from './Dropdown';
@@ -38,25 +38,31 @@ const transformDate = (date) => {
   if(secondsDiff > 0) return 'Il y a ' + secondsDiff + ' seconde(s)';
 }
 
-const Post = ({ post }) => {
+const Post = ({ id, post, onSetId, selectedId }) => {
   // const randomColor = () => {
   //   return bgColors[Math.floor(Math.random() * bgColors.length)];
   // }
   const { result: user } = fetchUser();
-  const [toggleDropdown, setToggleDropdown] = useState("");
 
   const onDropdown = (id) => {
-    if(!toggleDropdown) {
-      setToggleDropdown(id);
-    } else {
-      toggleDropdown === id ? setToggleDropdown("") : setToggleDropdown(id);
-    }
+    onSetId(id === selectedId ? "" : id);
   }
 
+  useEffect(() => {
+    const handleClickAnywhere = (event) => {
+      if (!event.target.closest(".dropdown")) {
+        onSetId("");
+      }
+    };
+    document.addEventListener("click", handleClickAnywhere);
+    return () => {
+      document.removeEventListener("click", handleClickAnywhere);
+    };
+  })
 
   return (
-    <div className="w-full flex flex-col gap-4 mb-4">
-      <div key={post._id} className={`w-full flex flex-col gap-4 p-4 rounded-xl border shadow-md relative`}>
+    <div key={id} className="w-full flex flex-col gap-4 mb-4">
+      <div key={post._id} className={`w-full flex flex-col gap-4 p-4 rounded-xl border shadow-lg relative`}>
         {/* User & Options */}
         <div className="w-full flex justify-between items-center relative">
           {/* User */}
@@ -75,11 +81,11 @@ const Post = ({ post }) => {
           </div>
 
           {/* Options */}
-          <div className="relative" onClick={() => onDropdown(post._id)}>
+          <div className="relative dropdown" onClick={() => onDropdown(post._id)}>
             <div className="w-[40px] h-[40px] rounded-full flex justify-center items-center transition-all cursor-pointer hover:bg-gray-100">
               <svg xmlns="http://www.w3.org/2000/svg" className="rotate-90" width="25" height="25" viewBox="0 0 24 24"><path fill="#000000" d="M12 16a2 2 0 0 1 2 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2m0-6a2 2 0 0 1 2 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2m0-6a2 2 0 0 1 2 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2"/></svg>
             </div>
-            {toggleDropdown === post._id &&
+            {post._id === selectedId &&
               <Dropdown post={post} user={user} />
             }
           </div>
