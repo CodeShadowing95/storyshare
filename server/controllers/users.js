@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 import user from '../models/user.js';
+import { shuffle } from './util.js';
 
 export const signin = async (req, res) => {
   const { email, password } = req.body;
@@ -60,8 +61,9 @@ export const signup = async (req, res) => {
 export const getUsers = async (req, res) => {
   try {
     const users = await user.find();
+    const shuffledUsers = shuffle(users);
 
-    res.status(200).json({ data: users });
+    res.status(200).json({ data: shuffledUsers });
   } catch (error) {
     res.status(404).json({ message: error.message });
   }

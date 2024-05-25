@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 const Editor = ({ setEditorDatas, data }) => {
   const [images, setImages] = useState([]);
   const [message, setMessage] = useState("");
-  const [datasEditor, setDatasEditor] = useState({ message: !data?.message ? message : data.message, pictures: images });
+  const [datasEditor, setDatasEditor] = useState({ message: message, pictures: images });
 
   const handleChange = (e) => {
     setMessage(e.target.value);
-    setDatasEditor({ ...datasEditor, message: message });
+    setDatasEditor({ ...datasEditor, message: e.target.value });
   }
 
   const uploadImages = () => {
@@ -40,10 +40,12 @@ const Editor = ({ setEditorDatas, data }) => {
   }, [datasEditor, setEditorDatas]);
 
   useEffect(() => {
-    data &&
-    setTimeout(() => {
-      data.pictures?.length > 0 && setImages(data.pictures);
-    })
+    if(data?.message) {
+      setMessage(data.message);
+      setTimeout(() => {
+        data.pictures?.length > 0 && setImages(data.pictures);
+      });
+    }
   }, [data]);
 
 
@@ -91,7 +93,7 @@ const Editor = ({ setEditorDatas, data }) => {
         
         <div className="px-4 py-2 bg-white rounded-b-lg">
           <label htmlFor="editor" className="sr-only">Publish post</label>
-          <textarea name="message" id="editor" rows="8" value={data ? data.message : datasEditor.message} className="block w-full px-0 text-sm text-gray-800 bg-white border-0 focus:outline-none" placeholder="Qu'avez-vous en tête..." required onChange={e => handleChange(e)}></textarea>
+          <textarea name="message" id="editor" rows="8" value={message} className="block w-full px-0 text-sm text-gray-800 bg-white border-0 focus:outline-none" placeholder="Qu'avez-vous en tête..." required onChange={e => handleChange(e)}></textarea>
         </div>
       </div>
 

@@ -18,8 +18,8 @@ import dashboard from './icons/dashboard.svg';
 import friends from './icons/friends.svg';
 import group from './icons/group.svg';
 import notification from './icons/notification.svg';
-import post from './icons/post.svg';
 import story from './icons/story.svg';
+import message from './icons/message.svg';
 
 import loader from './loader.svg';
 
@@ -36,8 +36,8 @@ export {
   friends,
   group,
   notification,
-  post,
   story,
+  message,
   signinBanner1,
   signinBanner2,
   signinBanner3,

@@ -10,7 +10,7 @@ import { getUsers } from "../services/user-service";
 const Feed = ({ onSuccess }) => {
   const { result: user} = fetchUser();
   const [posts, setPosts] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedPost, setSelectedPost] = useState("")
   const [isSuccess, setIsSuccess] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
@@ -48,11 +48,10 @@ const Feed = ({ onSuccess }) => {
     })
   }
 
+  const getAllPosts = async () => {
+    setIsLoading(true);
 
-
-  // API call to get posts
-  useEffect(() => {
-    getPosts()
+    await getPosts()
     .then((response) => {
       const { data } = response.data;
       setPosts(data);
@@ -63,6 +62,13 @@ const Feed = ({ onSuccess }) => {
     .finally(() => {
       setIsLoading(false);
     })
+  }
+
+
+
+  // API call to get posts
+  useEffect(() => {
+    getAllPosts()
   }, [])
 
   // Get friends suggestions
@@ -281,8 +287,8 @@ const Feed = ({ onSuccess }) => {
                       </div>
                       <p className="text-xs font-bold max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">@{suggestion.username}</p>
                     </div>
-                    <button className="text-xs font-medium bg-zinc-900 text-white rounded-full p-1.5 flex justify-center items-center gap-0.5">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="#ffffff" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
+                    <button className="text-xs font-medium bg-zinc-900 text-white rounded-full px-2 py-1.5 flex justify-center items-center gap-0.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path fill="#ffffff" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
                       Ajouter
                     </button>
                   </div>

@@ -185,7 +185,7 @@ const NewPost = ({ onSuccess }) => {
           {/* Content */}
           <div className="w-full flex flex-col gap-3 mt-4">
             {editorDatas.message ?
-              <p className="text-xs font-medium">{editorDatas.message}</p>
+              <p className="text-xs font-medium breakwords">{editorDatas.message}</p>
               :
               <p className="text-xs font-medium">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Eligendi illo fugiat fugit reprehenderit odio temporibus quibusdam dolorum nobis.</p>
             }

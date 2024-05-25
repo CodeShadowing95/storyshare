@@ -1,4 +1,4 @@
-import { dashboard, friends, group, notification, post, story } from "../assets"
+import { dashboard, friends, group, message, notification, story } from "../assets"
 
 const bgColors = [
   'bg-slate-50',
@@ -34,15 +34,15 @@ const menus = [
   },
   {
     id: 2,
-    title: "Mes publications",
-    icon: post,
-    link: "posts",
+    title: "Messages",
+    icon: message,
+    link: "messages",
   },
   {
     id: 3,
-    title: "Mes stories",
+    title: "Vidskits",
     icon: story,
-    link: "stories",
+    link: "videos",
   },
   {
     id: 4,
