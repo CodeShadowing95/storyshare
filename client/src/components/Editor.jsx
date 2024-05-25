@@ -3,10 +3,12 @@ import { useEffect, useState } from "react";
 
 const Editor = ({ setEditorDatas, data }) => {
   const [images, setImages] = useState([]);
-  const [datasEditor, setDatasEditor] = useState({ message: !data?.message ? '' : data.message, pictures: images });
+  const [message, setMessage] = useState("");
+  const [datasEditor, setDatasEditor] = useState({ message: !data?.message ? message : data.message, pictures: images });
 
   const handleChange = (e) => {
-    setDatasEditor({ ...datasEditor, [e.target.name]: e.target.value });
+    setMessage(e.target.value);
+    setDatasEditor({ ...datasEditor, message: message });
   }
 
   const uploadImages = () => {
@@ -23,7 +25,7 @@ const Editor = ({ setEditorDatas, data }) => {
         const randomId = Array(12).fill(0).map(() => Math.random().toString(36)[2]).join('');
 
         setImages([...images, { id: randomId, src: reader.result }]);
-        setDatasEditor({ ...datasEditor, pictures: [...images, { id: randomId, src: reader.result }] });
+        setDatasEditor({ ...datasEditor,  pictures: [...images, { id: randomId, src: reader.result }] });
       };
     };
   }

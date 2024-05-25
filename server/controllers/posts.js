@@ -33,9 +33,9 @@ export const shuffle = (array) => {
 export const getPosts = async (req, res) => {
 
   try {
-    const posts = await PostMessage.find();
+    let posts = await PostMessage.find();
 
-    shuffle(posts);
+    posts = shuffle(posts);
     res.status(200).json({ data: posts });
   } catch (error) {
     res.status.json({ message: error.message });
@@ -129,13 +129,13 @@ export const updatePost = async (req, res) => {
  * @returns {Promise<void>} - A promise that resolves when the post is deleted and sent as a JSON response.
  */
 export const deletePost = async (req, res) => {
-  const { id } = req.params;
+  const { id: _id } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(id)) {
+  if (!mongoose.Types.ObjectId.isValid(_id)) {
     return res.status(404).send("No post with that id found");
   }
 
-  await PostMessage.findByIdAndRemove(id);
+  await PostMessage.findByIdAndDelete(_id);
 
   res.json({ message: "Post deleted successfully" });
 }
@@ -151,22 +151,42 @@ export const deletePost = async (req, res) => {
  */
 export const likePost = async (req, res) => {
   const { id } = req.params;
+  const { userId } = req.body;
 
-  if (!req.userId) {
+  if (!userId) {
     return res.json({ message: "Unauthenticated" });
   }
 
   const post = await PostMessage.findById(id);
 
-  const index = post.likes.findIndex((id) => id === String(req.userId));
+  const index = post.likes.findIndex((id) => id === String(userId));
 
   if (index === -1) {
-    post.likes.push(req.userId);
+    post.likes.push(userId);
   } else {
-    post.likes = post.likes.filter((id) => id !== String(req.userId));
+    post.likes = post.likes.filter((id) => id !== String(userId));
   }
 
-  const likedPost = await PostMessage.findByIdAndUpdate(id, post, { new: true });
+  await PostMessage.findByIdAndUpdate(id, post, { new: true });
 
-  res.json(likedPost);
+  res.json({ likes: post.likes, });
+}
+
+export const getComments = async (req, res) => {
+  const { id } = req.params;
+  const post = await PostMessage.findById(id);
+  res.status(200).json(post.comments);
+}
+
+export const commentPost = async (req, res) => {
+  const { id } = req.params;
+  const { comment, idUser, username, imgProfile } = req.body;
+
+  const post = await PostMessage.findById(id);
+
+  post.comments.push({ text: comment, userId: idUser, username: username, userAvatar: imgProfile });
+
+  await PostMessage.findByIdAndUpdate(id, post, { new: true });
+
+  res.json({ message: "Comment added successfully" });
 }

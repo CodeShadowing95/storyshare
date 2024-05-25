@@ -2,9 +2,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Post from "../components/Post"
-import { getPosts } from "../services/post-service";
-import { loader } from "../assets";
+import { deletePost, getPosts } from "../services/post-service";
+import { loader, ulquiorra } from "../assets";
 import { fetchUser } from "../utils";
+import { getUsers } from "../services/user-service";
 
 const Feed = ({ onSuccess }) => {
   const { result: user} = fetchUser();
@@ -12,6 +13,14 @@ const Feed = ({ onSuccess }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState("")
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
+  const [openModal, setOpenModal] = useState(false)
+
+  const [suggestions, setSuggestions] = useState([])
+  const [loadingSug, setLoadingSug] = useState(true)
+
+  const [modalData, setModalData] = useState("");
+  const [waitingDelete, setWaitingDelete] = useState(false)
 
   const navigate = useNavigate();
 
@@ -19,6 +28,29 @@ const Feed = ({ onSuccess }) => {
     navigate(`/${page}`);
   }
 
+  const postDelete = async (id) => {
+    setWaitingDelete(true);
+
+    await deletePost(id)
+    .then((response) => {
+      console.log(response);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      setModalData("");
+      setWaitingDelete(false);
+      setOpenModal(false);
+      setIsDeleted(true);
+      window.location.reload();
+      // navigateTo("feed");
+    })
+  }
+
+
+
+  // API call to get posts
   useEffect(() => {
     getPosts()
     .then((response) => {
@@ -33,29 +65,86 @@ const Feed = ({ onSuccess }) => {
     })
   }, [])
 
+  // Get friends suggestions
+  useEffect(() => {
+    getUsers()
+    .then((response) => {
+      const { data } = response.data;
+      const users = data.filter((item) => item._id !== user._id);
+      setSuggestions(users);
+      setLoadingSug(false);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+  }, [])
+
+  // Handling success message
   useEffect(() => {
     if(isSuccess === false) return;
     setIsSuccess(onSuccess);
     setTimeout(() => {
       setIsSuccess(false);
-    }, 3000)
+    }, 5000)
   }, [isSuccess, onSuccess])
+
+  // Handling delete message
+  useEffect(() => {
+    if(isDeleted === false) return;
+    setTimeout(() => {
+      setIsDeleted(false);
+    }, 5000)
+  }, [isDeleted])
+
+
+  // Handling delete modal
+  useEffect(() => {
+    modalData && setOpenModal(true);
+  }, [modalData])
+
 
 
 
   return (
-    <section className="w-[calc(100vw-300px)] min-h-screen flex pt-10 relative overflow-hidden">
-      {/* Success message */}
+    <section className="w-[calc(100vw-300px)] min-h-screen flex mt-10 relative overflow-hidden">
+      {/* Success edit message */}
       <div className={`fixed top-24 left-[40%] z-20 ${isSuccess ? "translate-y-0" : "-translate-y-[200%]"} transition-all rounded-xl`}>
         <div className="w-[300px] flex flex-col justify-center items-center gap-1 rounded-lg bg-green-50 p-4 shadow-2xl relative">
           <div className="absolute top-1 right-2 rounded-lg border" onClick={() => setIsSuccess(false)}>
             <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24"><path fill="#16a34a" d="m8.4 17l3.6-3.6l3.6 3.6l1.4-1.4l-3.6-3.6L17 8.4L15.6 7L12 10.6L8.4 7L7 8.4l3.6 3.6L7 15.6zm3.6 5q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22"/></svg>
           </div>
-
           <svg xmlns="http://www.w3.org/2000/svg" className="mb-4" width="40" height="40" viewBox="0 0 448 512"><path fill="#16a34a" d="M342.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 178.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l80 80c12.5 12.5 32.8 12.5 45.3 0zm96 128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 402.7L54.6 297.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l256-256z"/></svg>
           <p className="text-lg font-bold mb-2">Yay !</p>
-          <p className="text-sm font-medium text-gray-500 mb-8">Votre post a bien été créé/modifié.</p>
+          <p className="text-sm font-medium text-gray-500 mb-8">Votre post a bien été modifié.</p>
           <div className="text-sm font-extrabold text-green-500 hover:text-green-600 transition-colors cursor-pointer" onClick={() => setIsSuccess(false)}>OK, COOL</div>
+        </div>
+      </div>
+
+      {/* Success delete message */}
+      <div className={`fixed top-24 left-[40%] z-20 ${isDeleted ? "translate-y-0" : "-translate-y-[200%]"} transition-all rounded-xl`}>
+        <div className="w-[300px] flex flex-col justify-center items-center gap-1 rounded-lg bg-green-50 p-4 shadow-2xl relative">
+          <div className="absolute top-1 right-2 rounded-lg border" onClick={() => setIsDeleted(false)}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24"><path fill="#16a34a" d="m8.4 17l3.6-3.6l3.6 3.6l1.4-1.4l-3.6-3.6L17 8.4L15.6 7L12 10.6L8.4 7L7 8.4l3.6 3.6L7 15.6zm3.6 5q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.137T12 2q2.075 0 3.9.788t3.175 2.137q1.35 1.35 2.138 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.138T12 22"/></svg>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" className="mb-4" width="40" height="40" viewBox="0 0 448 512"><path fill="#16a34a" d="M342.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 178.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l80 80c12.5 12.5 32.8 12.5 45.3 0zm96 128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L160 402.7L54.6 297.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l256-256z"/></svg>
+          <p className="text-lg font-bold mb-2">Post supprimé !</p>
+          <div className="text-sm font-extrabold text-green-500 hover:text-green-600 transition-colors cursor-pointer" onClick={() => setIsSuccess(false)}>OK</div>
+        </div>
+      </div>
+
+      {/* Modal Delete */}
+      <div className={`fixed inset-0 justify-center items-center bg-black/70 z-30 ${openModal ? "flex" : "hidden"}`}>
+        <div className={`flex flex-col justify-center items-center gap-3 rounded-lg bg-white shadow-xl shadow-black/30 w-[400px] p-6 ${openModal ? "translate-y-0" : "-translate-y-[200%]"} transition-transform duration-300`}>
+          <div className="flex justify-center items-center rounded-full p-2 bg-red-100">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 256 256"><path fill="#dc2626" d="M240.26 186.1L152.81 34.23a28.74 28.74 0 0 0-49.62 0L15.74 186.1a27.45 27.45 0 0 0 0 27.71A28.31 28.31 0 0 0 40.55 228h174.9a28.31 28.31 0 0 0 24.79-14.19a27.45 27.45 0 0 0 .02-27.71m-20.8 15.7a4.46 4.46 0 0 1-4 2.2H40.55a4.46 4.46 0 0 1-4-2.2a3.56 3.56 0 0 1 0-3.73L124 46.2a4.77 4.77 0 0 1 8 0l87.44 151.87a3.56 3.56 0 0 1 .02 3.73M116 136v-32a12 12 0 0 1 24 0v32a12 12 0 0 1-24 0m28 40a16 16 0 1 1-16-16a16 16 0 0 1 16 16"/></svg>
+          </div>
+          <p className="text-base font-bold">Confirmer la suppression ?</p>
+          <p className="text-sm text-gray-500 text-center max-w-[300px]">Cette action est irréversible. Votre post sera supprimé définitivement. Voulez-vous confirmer la suppression ?</p>
+          <button className="w-full flex justify-center items-center py-2 mt-2 gap-4 bg-red-600 hover:bg-red-700 rounded-md text-sm font-semibold text-white shadow-md cursor-pointer disabled:bg-gray-300 disabled:text-gray-400 disabled:cursor-not-allowed" disabled={waitingDelete} onClick={() => postDelete(modalData)}>
+            Oui, supprimer
+            {waitingDelete && <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><rect width="6" height="14" x="1" y="4" fill="#ffffff"><animate id="svgSpinnersBarsScaleFade0" fill="freeze" attributeName="y" begin="0;svgSpinnersBarsScaleFade1.end-0.25s" dur="0.75s" values="1;5"/><animate fill="freeze" attributeName="height" begin="0;svgSpinnersBarsScaleFade1.end-0.25s" dur="0.75s" values="22;14"/><animate fill="freeze" attributeName="opacity" begin="0;svgSpinnersBarsScaleFade1.end-0.25s" dur="0.75s" values="1;.2"/></rect><rect width="6" height="14" x="9" y="4" fill="#ffffff" opacity=".4"><animate fill="freeze" attributeName="y" begin="svgSpinnersBarsScaleFade0.begin+0.15s" dur="0.75s" values="1;5"/><animate fill="freeze" attributeName="height" begin="svgSpinnersBarsScaleFade0.begin+0.15s" dur="0.75s" values="22;14"/><animate fill="freeze" attributeName="opacity" begin="svgSpinnersBarsScaleFade0.begin+0.15s" dur="0.75s" values="1;.2"/></rect><rect width="6" height="14" x="17" y="4" fill="#ffffff" opacity=".3"><animate id="svgSpinnersBarsScaleFade1" fill="freeze" attributeName="y" begin="svgSpinnersBarsScaleFade0.begin+0.3s" dur="0.75s" values="1;5"/><animate fill="freeze" attributeName="height" begin="svgSpinnersBarsScaleFade0.begin+0.3s" dur="0.75s" values="22;14"/><animate fill="freeze" attributeName="opacity" begin="svgSpinnersBarsScaleFade0.begin+0.3s" dur="0.75s" values="1;.2"/></rect></svg>}
+          </button>
+          <div className="w-full flex justify-center items-center py-2 border-2 hover:bg-gray-100 rounded-md text-sm font-semibold cursor-pointer" onClick={() => setOpenModal(false)}>Annuler</div>
         </div>
       </div>
 
@@ -66,8 +155,8 @@ const Feed = ({ onSuccess }) => {
           <div className="flex justify-center items-center gap-4">
             <p className="text-xs font-semibold cursor-pointer">Tous</p>
             <p className="text-xs text-gray-400 cursor-pointer">Récents</p>
-            <p className="text-xs text-gray-400 cursor-pointer">Favoris</p>
             <p className="text-xs text-gray-400 cursor-pointer">Populaires</p>
+            <p className="text-xs text-gray-400 cursor-pointer">Enregistrés</p>
           </div>
         </div>
         
@@ -111,8 +200,7 @@ const Feed = ({ onSuccess }) => {
               </div>
             :
             posts.map((post, index) => (
-              // eslint-disable-next-line react/jsx-key
-              <Post id={index} post={post} onSetId={setSelectedPost} selectedId={selectedPost} />
+              <Post key={post._id} id={index} post={post} onSetId={setSelectedPost} selectedId={selectedPost} onModalPost={setModalData} />
             ))
           }
         </div>
@@ -164,53 +252,43 @@ const Feed = ({ onSuccess }) => {
 
         {/* Suggestions */}
         <div className="w-full flex-col gap-2 mb-8">
-          <p className="text-base font-extrabold mb-3">Suggestions</p>
-          {/* If suggestions empty */}
-          <div className="w-full h-[200px] flex flex-col justify-center items-center border-dashed border-2 rounded-sm bg-gray-100">
-            <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><path fill="#a0a0a0" d="M20 10.73q-.31 0-.52-.21t-.21-.52t.21-.52t.52-.21t.52.21t.21.52t-.21.52t-.52.21m0-3.23q-.213 0-.357-.144T19.5 7V4q0-.213.144-.356q.144-.144.357-.144t.356.144T20.5 4v3q0 .213-.144.356q-.144.144-.357.144M9 11.385q-1.237 0-2.119-.882T6 8.385t.881-2.12T9 5.386t2.119.88t.881 2.12t-.881 2.118T9 11.385m-7 6.192v-.608q0-.619.36-1.158t.97-.838q1.416-.679 2.833-1.018T9 13.615t2.837.34t2.832 1.018q.61.298.97.838T16 16.969v.608q0 .44-.299.74t-.74.298H3.039q-.44 0-.739-.299t-.3-.74"/></svg>
-            <p className="text-xs font-semibold text-gray-500 max-w-[200px] text-center">Aucune suggestion d{`'`}amis pour le moment</p>
+          <div className="w-full flex justify-between items-center mb-3">
+            <p className="text-base font-extrabold">Suggestions</p>
+            {suggestions.length > 3 &&
+              <p className="text-xs text-blue-500 hover:underline cursor-pointer">Voir tout</p>
+            }
           </div>
-
-          {/* If suggestions not empty */}
-          {/* <div className="w-full flex flex-col gap-3">
-            <div className="w-full flex justify-between items-center">
-              <div className="flex justify-center items-center gap-2">
-                <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
-                  <img src="/assets/grimmjow.png" alt="user" className="w-full h-full object-cover" />
-                </div>
-                <div className="flex flex-col justify-center">
-                  <p className="text-xs font-bold">Grimmjow</p>
-                  <p className="text-xs font-bold">Jeagerjaquez</p>
-                </div>
-              </div>
-              <button className="text-xs font-medium bg-zinc-900 text-white rounded-full py-1 px-2">Ajouter</button>
+          {loadingSug ?
+            <div className="w-full h-[200px] flex flex-col justify-center items-center border-dashed border-2 rounded-sm bg-gray-100">
+              <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><path fill="#a0a0a0" d="M20 10.73q-.31 0-.52-.21t-.21-.52t.21-.52t.52-.21t.52.21t.21.52t-.21.52t-.52.21m0-3.23q-.213 0-.357-.144T19.5 7V4q0-.213.144-.356q.144-.144.357-.144t.356.144T20.5 4v3q0 .213-.144.356q-.144.144-.357.144M9 11.385q-1.237 0-2.119-.882T6 8.385t.881-2.12T9 5.386t2.119.88t.881 2.12t-.881 2.118T9 11.385m-7 6.192v-.608q0-.619.36-1.158t.97-.838q1.416-.679 2.833-1.018T9 13.615t2.837.34t2.832 1.018q.61.298.97.838T16 16.969v.608q0 .44-.299.74t-.74.298H3.039q-.44 0-.739-.299t-.3-.74"/></svg>
+              <p className="text-xs font-semibold text-gray-500 max-w-[200px] text-center">Chargement des suggestions...</p>
             </div>
-            <div className="w-full flex justify-between items-center">
-              <div className="flex justify-center items-center gap-2">
-                <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
-                  <img src="/assets/szayel.png" alt="user" className="w-full h-full object-cover" />
-                </div>
-                <div className="flex flex-col justify-center max-w-[100px]">
-                  <p className="text-xs font-bold">Szayel Aporro</p>
-                  <p className="text-xs font-bold">Granz</p>
-                </div>
+            :
+            suggestions?.length === 0 ?
+              /* If suggestions empty */
+              <div className="w-full h-[200px] flex flex-col justify-center items-center border-dashed border-2 rounded-sm bg-gray-100">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><circle cx="12" cy="12" r="0" fill="#a0a0a0"><animate id="svgSpinnersPulse20" fill="freeze" attributeName="r" begin="0;svgSpinnersPulse21.begin+0.6s" calcMode="spline" dur="1.2s" keySplines=".52,.6,.25,.99" values="0;11"/><animate fill="freeze" attributeName="opacity" begin="0;svgSpinnersPulse21.begin+0.6s" calcMode="spline" dur="1.2s" keySplines=".52,.6,.25,.99" values="1;0"/></circle><circle cx="12" cy="12" r="0" fill="#000000"><animate id="svgSpinnersPulse21" fill="freeze" attributeName="r" begin="svgSpinnersPulse20.begin+0.6s" calcMode="spline" dur="1.2s" keySplines=".52,.6,.25,.99" values="0;11"/><animate fill="freeze" attributeName="opacity" begin="svgSpinnersPulse20.begin+0.6s" calcMode="spline" dur="1.2s" keySplines=".52,.6,.25,.99" values="1;0"/></circle></svg>
+                <p className="text-xs font-semibold text-gray-500 max-w-[200px] text-center">Aucune suggestion d{`'`}amis pour le moment</p>
               </div>
-              <button className="text-xs font-medium bg-zinc-900 text-white rounded-full py-1 px-2">Ajouter</button>
-            </div>
-            <div className="w-full flex justify-between items-center">
-              <div className="flex justify-center items-center gap-2">
-                <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
-                  <img src="/assets/barragan.png" alt="user" className="w-full h-full object-cover" />
-                </div>
-                <div className="flex flex-col justify-center">
-                  <p className="text-xs font-bold">Barragan</p>
-                  <p className="text-xs font-bold">Ruisenban</p>
-                </div>
+              :
+              /* If suggestions not empty */
+              <div className="w-full flex flex-col gap-3">
+                {suggestions.slice(0, 3).map((suggestion, index) => (
+                  <div key={index} className="w-full flex justify-between items-center">
+                    <div className="flex justify-center items-center gap-2">
+                      <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
+                        <img src={suggestion.imgProfile ? suggestion.imgProfile : ulquiorra} alt="user" className="w-full h-full object-cover" />
+                      </div>
+                      <p className="text-xs font-bold max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">@{suggestion.username}</p>
+                    </div>
+                    <button className="text-xs font-medium bg-zinc-900 text-white rounded-full p-1.5 flex justify-center items-center gap-0.5">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="#ffffff" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
+                      Ajouter
+                    </button>
+                  </div>
+                ))}
               </div>
-              <button className="text-xs font-medium bg-zinc-900 text-white rounded-full py-1 px-2">Ajouter</button>
-            </div>
-          </div> */}
-          {/* <p className="text-xs text-gray-400 mt-3 hover:text-black hover:underline cursor-pointer">Voir tous les utilisateurs</p> */}
+          }
         </div>
 
 

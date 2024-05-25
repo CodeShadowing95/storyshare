@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+const Schema = mongoose.Schema;
 
 
 const postSchema = mongoose.Schema({
@@ -20,7 +21,15 @@ const postSchema = mongoose.Schema({
   comments: [
     {
       text: String,
-      user: String,
+      userId: String,
+      username:  String,
+      userAvatar: { type: String, default: "" },
+      createdAt: { type: Date, default: new Date() },
+      // user: {
+      //   type: Schema.Types.ObjectId,
+      //   ref: 'User',
+      //   default: null
+      // },
     },
   ],
   createdAt: {

@@ -2,7 +2,7 @@
 
 import { useNavigate } from "react-router-dom"
 
-const Dropdown = ({ post, user }) => {
+const Dropdown = ({ post, user, onToggleModal }) => {
   const navigate = useNavigate();
 
   const editPost = (post) => {
@@ -22,7 +22,7 @@ const Dropdown = ({ post, user }) => {
             </div>
           </div>
           <div className="w-full h-[1px] bg-gray-200 my-1" />
-          <div className="w-full flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer">
+          <div className="w-full flex items-center px-4 py-2 hover:bg-gray-200 cursor-pointer" onClick={() => onToggleModal(post._id)}>
             <div className="text-sm inline-flex gap-2 items-center font-semibold">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="#ef4444" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zm2-4h2V8H9zm4 0h2V8h-2z"/></svg>
               <p className="text-[13px] text-red-500">Supprimer mon post</p>
