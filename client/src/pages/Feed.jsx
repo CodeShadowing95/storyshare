@@ -83,7 +83,7 @@ const Feed = ({ onSuccess }) => {
     .catch((error) => {
       console.log(error);
     })
-  }, [])
+  }, [user._id])
 
   // Handling success message
   useEffect(() => {
