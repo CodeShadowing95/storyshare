@@ -34,21 +34,21 @@ const menus = [
   },
   {
     id: 2,
+    title: "Forums",
+    icon: group,
+    link: "groups",
+  },
+  {
+    id: 3,
     title: "Messages",
     icon: message,
     link: "messages",
   },
   {
-    id: 3,
+    id: 4,
     title: "Vidskits",
     icon: story,
     link: "videos",
-  },
-  {
-    id: 4,
-    title: "Forums",
-    icon: group,
-    link: "groups",
   },
   {
     id: 5,

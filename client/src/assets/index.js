@@ -1,5 +1,5 @@
 import logo from './logo.png';
-import logo_svg from './logo_svg.svg';
+import logo_svg from './logo2.svg';
 import barragan from './barragan.png';
 import coyote from './coyote.png';
 import grimmjow from './grimmjow.png';
@@ -20,6 +20,7 @@ import group from './icons/group.svg';
 import notification from './icons/notification.svg';
 import story from './icons/story.svg';
 import message from './icons/message.svg';
+import groupIcon from './group.png';
 
 import loader from './loader.svg';
 
@@ -46,4 +47,5 @@ export {
   imgModel1,
   imgModel2,
   loader,
+  groupIcon,
 };

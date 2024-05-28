@@ -1,17 +1,19 @@
+import Signin from "./Signin";
+import Signup from "./Signup";
 import Home from "./Home";
 import Auth from "./Auth";
 import Feed from "./Feed";
 import Posts from "./Posts";
 import NewPost from "./NewPost";
-import Signin from "./Signin";
-import Signup from "./Signup";
+import Group from "./Group";
 
 export {
+  Signin,
+  Signup,
   Auth,
   Home,
   Feed,
   Posts,
   NewPost,
-  Signin,
-  Signup,
+  Group,
 }

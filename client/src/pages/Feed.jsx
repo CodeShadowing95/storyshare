@@ -6,6 +6,7 @@ import { deletePost, getPosts } from "../services/post-service";
 import { loader, ulquiorra } from "../assets";
 import { fetchUser } from "../utils";
 import { getUsers } from "../services/user-service";
+import { getGroupsList } from "../services/group-service";
 
 const Feed = ({ onSuccess }) => {
   const { result: user} = fetchUser();
@@ -22,6 +23,10 @@ const Feed = ({ onSuccess }) => {
   const [modalData, setModalData] = useState("");
   const [waitingDelete, setWaitingDelete] = useState(false)
 
+  const [groups, setGroups] = useState([])
+  const [randomGroup, setRandomGroup] = useState({})
+  const [loadingGroup, setLoadingGroup] = useState(false)
+
   const navigate = useNavigate();
 
   const navigateTo = (page) => {
@@ -35,17 +40,13 @@ const Feed = ({ onSuccess }) => {
     .then((response) => {
       console.log(response);
     })
-    .catch((error) => {
-      console.log(error);
-    })
-    .finally(() => {
-      setModalData("");
-      setWaitingDelete(false);
-      setOpenModal(false);
-      setIsDeleted(true);
-      window.location.reload();
-      // navigateTo("feed");
-    })
+
+    setModalData("");
+    setWaitingDelete(false);
+    setOpenModal(false);
+    setIsDeleted(true);
+    window.location.reload();
+    // navigateTo("feed");
   }
 
   const getAllPosts = async () => {
@@ -55,16 +56,10 @@ const Feed = ({ onSuccess }) => {
     .then((response) => {
       const { data } = response.data;
       setPosts(data);
-    })
-    .catch((error) => {
-      console.log(error);
-    })
-    .finally(() => {
+    
       setIsLoading(false);
     })
   }
-
-
 
   // API call to get posts
   useEffect(() => {
@@ -79,9 +74,6 @@ const Feed = ({ onSuccess }) => {
       const users = data.filter((item) => item._id !== user._id);
       setSuggestions(users);
       setLoadingSug(false);
-    })
-    .catch((error) => {
-      console.log(error);
     })
   }, [user._id])
 
@@ -108,11 +100,23 @@ const Feed = ({ onSuccess }) => {
     modalData && setOpenModal(true);
   }, [modalData])
 
+  useEffect(() => {
+    setLoadingGroup(true)
+    getGroupsList()
+    .then((response) => {
+      const { data } = response;
+      setGroups(data);
+      setRandomGroup(data[Math.floor(Math.random() * data.length)])
+
+      setLoadingGroup(false)
+    })
+  }, [])
+
 
 
 
   return (
-    <section className="w-[calc(100vw-300px)] min-h-screen flex mt-10 relative overflow-hidden">
+    <section className="w-[calc(100vw-300px)] min-h-screen flex pt-10 px-4 relative overflow-hidden">
       {/* Success edit message */}
       <div className={`fixed top-24 left-[40%] z-20 ${isSuccess ? "translate-y-0" : "-translate-y-[200%]"} transition-all rounded-xl`}>
         <div className="w-[300px] flex flex-col justify-center items-center gap-1 rounded-lg bg-green-50 p-4 shadow-2xl relative">
@@ -219,7 +223,7 @@ const Feed = ({ onSuccess }) => {
         <div className="w-full flex-col gap-2 overflow-hidden mb-8">
           <p className="text-base font-extrabold mb-3">Stories</p>
           {/* If stories empty */}
-          <div className="w-full h-[200px] flex justify-center items-center border-dashed border-2 rounded-sm bg-gray-100">
+          <div className="w-full h-[200px] flex justify-center items-center border-dashed border-2 rounded-md bg-gray-100">
             <div className="w-full flex flex-col justify-center items-center mb-8">
               <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><path fill="#a0a0a0" d="M5.5 16V8a3 3 0 0 0-3-3a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5a3 3 0 0 0 3-3m7-11c1.886 0 2.828 0 3.414.586c.586.586.586 1.528.586 3.414v6c0 1.886 0 2.828-.586 3.414C15.328 19 14.386 19 12.5 19h-1c-1.886 0-2.828 0-3.414-.586C7.5 17.828 7.5 16.886 7.5 15V9c0-1.886 0-2.828.586-3.414C8.672 5 9.614 5 11.5 5zm6 3v8a3 3 0 0 0 3 3a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5a3 3 0 0 0-3 3"/></svg>
               <p className="text-xs font-semibold text-gray-500 max-w-[200px] text-center">Aucune story pour le moment</p>
@@ -299,54 +303,53 @@ const Feed = ({ onSuccess }) => {
 
 
         {/* Recommandations */}
-        <div className="w-full flex-col gap-2 mb-8">
-          <p className="text-base font-extrabold mb-3">Recommendations</p>
-          {/* If suggestions empty */}
-          <div className="w-full h-[200px] flex flex-col justify-center items-center border-dashed border-2 rounded-sm bg-gray-100">
-            <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><path fill="#a0a0a0" d="M0 18v-1.575q0-1.075 1.1-1.75T4 14q.325 0 .625.013t.575.062q-.35.525-.525 1.1t-.175 1.2V18zm6 0v-1.625q0-.8.438-1.463t1.237-1.162T9.588 13T12 12.75q1.325 0 2.438.25t1.912.75t1.225 1.163t.425 1.462V18zm13.5 0v-1.625q0-.65-.162-1.225t-.488-1.075q.275-.05.563-.062T20 14q1.8 0 2.9.663t1.1 1.762V18zM4 13q-.825 0-1.412-.587T2 11q0-.85.588-1.425T4 9q.85 0 1.425.575T6 11q0 .825-.575 1.413T4 13m16 0q-.825 0-1.412-.587T18 11q0-.85.588-1.425T20 9q.85 0 1.425.575T22 11q0 .825-.575 1.413T20 13m-8-1q-1.25 0-2.125-.875T9 9q0-1.275.875-2.137T12 6q1.275 0 2.138.863T15 9q0 1.25-.862 2.125T12 12"/></svg>
-            <p className="text-xs font-semibold text-gray-500 max-w-[200px] text-center">Aucun groupe pour le moment</p>
-          </div>
-
-          {/* If suggestions not empty */}
-          {/* <div className="w-full flex flex-col gap-2">
-            <div className="w-full flex justify-between items-center">
-              <div className="flex justify-center items-center gap-2">
-                <div className="w-[60px] h-[60px] rounded-sm overflow-hidden">
-                  <img src="/assets/ux-ui-group.png" alt="user" className="w-full h-full object-cover" />
-                </div>
-                <p className="text-xs font-bold overflow-hidden max-w-[120px] text-ellipsis whitespace-nowrap">UI/UX</p>
+        <div className="w-full">
+          {loadingGroup ? (
+            <div className="w-full flex flex-col gap-6 mb-8 rounded-md border border-gray-300 p-4 animate-pulse">
+              <div className="flex justify-center items-center gap-4">
+                <div className="w-[70px] h-[70px] rounded-full bg-neutral-400"></div>
+                <div className="w-[70px] h-[70px] bg-neutral-400"></div>
               </div>
-              <button className="text-xs font-medium bg-zinc-900 text-white rounded-full py-1 px-3">Intégrer</button>
-            </div>
-            <div className="w-full flex justify-between items-center">
-              <div className="flex justify-center items-center gap-2">
-                <div className="w-[60px] h-[60px] rounded-sm overflow-hidden">
-                  <img src="/assets/lofi.jpg" alt="user" className="w-full h-full object-cover" />
-                </div>
-                <p className="text-xs font-bold overflow-hidden max-w-[120px] text-ellipsis whitespace-nowrap">LOFI HipHop</p>
+              <div className="w-full flex flex-col justify-center items-center gap-2">
+                <div className="h-2.5 bg-neutral-400 rounded-full w-full"></div>
+                <div className="h-2.5 bg-neutral-400 rounded-full w-[70%]"></div>
+                <div className="h-2.5 bg-neutral-400 rounded-full w-28"></div>
               </div>
-              <button className="text-xs font-medium bg-zinc-900 text-white rounded-full py-1 px-3">Intégrer</button>
-            </div>
-            <div className="w-full flex justify-between items-center">
-              <div className="flex justify-center items-center gap-2">
-                <div className="w-[60px] h-[60px] rounded-sm overflow-hidden">
-                  <img src="/assets/uefa.jpg" alt="user" className="w-full h-full object-cover" />
-                </div>
-                <p className="text-xs font-bold overflow-hidden max-w-[120px] text-ellipsis whitespace-nowrap">Champions League</p>
+              <div className="w-full flex justify-center items-center">
+                <div className="h-8 bg-neutral-400 rounded-full w-24"></div>
               </div>
-              <button className="text-xs font-medium bg-zinc-900 text-white rounded-full py-1 px-3">Intégrer</button>
             </div>
-            <div className="w-full flex justify-between items-center">
-              <div className="flex justify-center items-center gap-2">
-                <div className="w-[60px] h-[60px] rounded-sm overflow-hidden">
-                  <img src="/assets/cooking.jpg" alt="user" className="w-full h-full object-cover" />
-                </div>
-                <p className="text-xs font-bold overflow-hidden max-w-[120px] text-ellipsis whitespace-nowrap">Cuisine</p>
+          )
+          :
+          (
+            groups?.length === 0 ? (
+              <div className="w-full h-[200px] flex flex-col justify-center items-center border-dashed border-2 rounded-sm bg-gray-100">
+                <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><path fill="#a0a0a0" d="M0 18v-1.575q0-1.075 1.1-1.75T4 14q.325 0 .625.013t.575.062q-.35.525-.525 1.1t-.175 1.2V18zm6 0v-1.625q0-.8.438-1.463t1.237-1.162T9.588 13T12 12.75q1.325 0 2.438.25t1.912.75t1.225 1.163t.425 1.462V18zm13.5 0v-1.625q0-.65-.162-1.225t-.488-1.075q.275-.05.563-.062T20 14q1.8 0 2.9.663t1.1 1.762V18zM4 13q-.825 0-1.412-.587T2 11q0-.85.588-1.425T4 9q.85 0 1.425.575T6 11q0 .825-.575 1.413T4 13m16 0q-.825 0-1.412-.587T18 11q0-.85.588-1.425T20 9q.85 0 1.425.575T22 11q0 .825-.575 1.413T20 13m-8-1q-1.25 0-2.125-.875T9 9q0-1.275.875-2.137T12 6q1.275 0 2.138.863T15 9q0 1.25-.862 2.125T12 12"/></svg>
+                <p className="text-xs font-semibold text-gray-500 max-w-[200px] text-center">Aucun groupe pour le moment</p>
               </div>
-              <button className="text-xs font-medium bg-zinc-900 text-white rounded-full py-1 px-3">Intégrer</button>
-            </div>
-          </div> */}
-          {/* <p className="text-xs text-gray-400 mt-3 hover:text-black hover:underline cursor-pointer">Voir tous les groupes</p> */}
+            )
+            :
+            (
+              <div className="w-full flex flex-col gap-4 mb-8 rounded-md border border-gray-300 p-4">
+                <div className="flex justify-center items-center gap-4">
+                  <div className="w-[70px] h-[70px] rounded-full overflow-hidden">
+                    <img src={user?.imgProfile ? user.imgProfile : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'} alt="user" className="w-full h-full object-cover" />
+                  </div>
+                  <div className="w-[85px] h-[85px]">
+                    <img src={randomGroup?.image ? randomGroup?.image : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'} alt="user" className="w-full h-full object-cover" />
+                  </div>
+                </div>
+                {/* Content */}
+                <div className="w-full flex justify-center items-center">
+                  <p className="text-[13px] text-center text-gray-500">{user?.username.split(' ')[0]}, découvrez les activités du groupe <span className="text-black font-semibold">{randomGroup?.name}</span> qui pourraient vous intéresser</p>
+                </div>
+                {/* Button */}
+                <div className="w-full flex justify-center items-center">
+                  <button onClick={() => setOpenModal(true)} className="w-[150px] h-10 border border-blue-500 rounded-full text-sm text-blue-500 hover:bg-blue-50 hover:border-2 transition-colors">Voir le groupe</button>
+                </div>
+              </div>
+            )
+          )}
         </div>
       </div>
     </section>

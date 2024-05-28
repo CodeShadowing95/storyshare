@@ -51,7 +51,7 @@ const Sidebar = ({ user }) => {
         </div>
 
         {/* Menus */}
-        <div className="flex flex-col justify-center items-center gap-2 w-full px-4">
+        <div className="flex flex-col justify-center items-center gap-2 w-full px-8">
           {menus.map((menu) => (
             <div key={menu.id} className={`w-full p-2 flex justify-between items-center border rounded-xl cursor-pointer ${menu.link === selected ? 'bg-zinc-900 text-white' : 'hover:bg-sky-100'}`} onClick={() => goToPage(menu.link)}>
               <div className="flex center items-center gap-1 w-full">

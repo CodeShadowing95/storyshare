@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 
 import postRoutes from "./routes/posts.js";
 import userRoutes from "./routes/users.js";
+import groupRoutes from "./routes/group.js";
 
 
 // It creates a new instance of the Express application. It's like creating a new project or a new file where we will define all the routes and other functionality of our server. We'll be using this 'app' throughout our code to define and access all the routes, middleware, and other functionalities of our server.
@@ -41,8 +42,9 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.use('/posts', postRoutes);
 app.use('/user', userRoutes);
+app.use('/posts', postRoutes);
+app.use('/groups', groupRoutes);
 
 
 const PORT = process.env.PORT || 5000;
