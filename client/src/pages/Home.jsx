@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom"
 import { Sidebar } from "../components"
 import { fetchUser } from "../utils"
-import { Feed, Group, NewPost, Posts } from "./index.js"
+import { EditGroup, Feed, Group, NewPost, Posts } from "./index.js"
 import { useState } from "react"
 
 const Home = () => {
@@ -20,6 +20,7 @@ const Home = () => {
         <Route path="/edit-post" element={<NewPost onSuccess={setIsSuccess} />} />
         {/* For Groupes */}
         <Route path="/groups" element={<Group user={user} />} />
+        <Route path="/edit-group/:groupId" element={<EditGroup user={user} />} />
       </Routes>
     </>
   )

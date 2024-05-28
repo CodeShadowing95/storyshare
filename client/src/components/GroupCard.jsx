@@ -2,11 +2,13 @@
 import { useEffect, useState } from "react"
 import { deleteGroup, getGroup } from "../services/group-service"
 import { groupIcon } from "../assets"
+import { useNavigate } from "react-router-dom"
 
 const GroupCard = ({ group, user }) => {
   const [toggleMenu, setToggleMenu] = useState(false)
   const [openModal, setOpenModal] = useState(false)
   const [waitingDelete, setWaitingDelete] = useState(false)
+  const navigate = useNavigate()
 
   const removeGroup = async () => {
     setWaitingDelete(true)
@@ -33,12 +35,24 @@ const GroupCard = ({ group, user }) => {
     })
   }, [group?._id])
 
+  useEffect(() => {
+    const handleClickAnywhere = (event) => {
+      if (!event.target.closest(".option")) {
+        setToggleMenu(false)
+      }
+    };
+    document.addEventListener("click", handleClickAnywhere);
+    return () => {
+      document.removeEventListener("click", handleClickAnywhere);
+    };
+  })
+
   return (
-    <div key={group?._id} className={`flex flex-col justify-between items-center w-[360px] max-h-[400px] gap-5 px-4 py-6 ${group?.privacy === "public" ? "bg-gray-50" : "bg-purple-50 border border-purple-300"} rounded-lg shadow-lg`}>
+    <div key={group?._id} className={`flex flex-col justify-between items-center w-[375px] max-h-[400px] gap-5 px-4 py-6 border ${group?.privacy === "public" ? "bg-gray-50 border-gray-300" : "bg-purple-50 border-purple-300"} rounded-lg shadow-lg`}>
       <div className="w-full flex flex-col justify-center items-center gap-5">
         <div className="flex justify-between items-start w-full">
           <div>
-            <p className="text-base font-extrabold max-w-[200px]">{group?.name.slice(0, 45)}{group?.name.length > 45 ? "..." : ""}</p>
+            <p className="text-base font-extrabold max-w-[250px]">{group?.name.slice(0, 45)}{group?.name.length > 45 ? "..." : ""}</p>
             { group?.status === "active" ? (
               <div className="flex justify-center items-center gap-0.5 mt-1 bg-yellow-100 border border-yellow-300 rounded-full px-2 py-0.5 max-w-[70px]">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 15 15"><path fill="#ca8a04" d="M9.875 7.5a2.375 2.375 0 1 1-4.75 0a2.375 2.375 0 0 1 4.75 0"/></svg>
@@ -53,7 +67,7 @@ const GroupCard = ({ group, user }) => {
               </div>
             )}
           </div>
-          <div className="w-20 h-20 overflow-hidden">
+          <div className="h-20 overflow-hidden">
             <img src={group?.image ? group?.image : groupIcon} alt="groupe-image" className="w-full h-full object-cover" />
           </div>
         </div>
@@ -76,9 +90,11 @@ const GroupCard = ({ group, user }) => {
         <p className="break-words">{group?.description.slice(0, 150)}{group?.description.length > 150 ? '...' : ''}<span className="text-blue-500 cursor-pointer hover:underline">Voir plus</span></p>
       </div>
 
-      <div className="w-full">
-        <p className="text-xs text-gray-400 font-semibold">Catégorie</p>
-        <p className="text-sm font-bold">{group?.category}</p>
+      <div className="w-full flex justify-between items-center">
+        <div className="w-full">
+          <p className="text-xs text-gray-400 font-semibold">Catégorie</p>
+          <p className="text-sm font-bold">{group?.category}</p>
+        </div>
       </div>
 
       <div className="w-full flex justify-between items-center">
@@ -111,7 +127,7 @@ const GroupCard = ({ group, user }) => {
             </>
           )}
         </div>
-        <div className="relative w-8 h-8 rounded-full flex justify-center items-center transition-all cursor-pointer hover:bg-gray-200" onClick={() => setToggleMenu(!toggleMenu)}>
+        <div className="relative w-8 h-8 rounded-full flex justify-center items-center transition-all cursor-pointer hover:bg-gray-200 option" onClick={() => setToggleMenu(!toggleMenu)}>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="#4b5563" d="M12 16a2 2 0 0 1 2 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2m0-6a2 2 0 0 1 2 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2m0-6a2 2 0 0 1 2 2a2 2 0 0 1-2 2a2 2 0 0 1-2-2a2 2 0 0 1 2-2"/></svg>
           <div className={`absolute ${toggleMenu ? 'block' : 'hidden'} -inset-x-40 w-[200px] px-2 py-3 bg-white -translate-y-[90px] rounded-lg shadow-md dropdown`}>
             <div className="w-full">
@@ -119,7 +135,7 @@ const GroupCard = ({ group, user }) => {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-[18px] w-[18px]" viewBox="0 0 24 24"><path fill="currentColor" d="M12 16q1.875 0 3.188-1.312T16.5 11.5q0-1.875-1.312-3.187T12 7q-1.875 0-3.187 1.313T7.5 11.5q0 1.875 1.313 3.188T12 16m0-1.8q-1.125 0-1.912-.788T9.3 11.5q0-1.125.788-1.912T12 8.8q1.125 0 1.913.788T14.7 11.5q0 1.125-.787 1.913T12 14.2m0 4.8q-3.65 0-6.65-2.037T1 11.5q1.35-3.425 4.35-5.462T12 4q3.65 0 6.65 2.038T23 11.5q-1.35 3.425-4.35 5.463T12 19m0-2q2.825 0 5.188-1.487T20.8 11.5q-1.25-2.525-3.613-4.012T12 6Q9.175 6 6.813 7.488T3.2 11.5q1.25 2.525 3.613 4.013T12 17"/></svg>
                 <p className="text-xs font-semibold">Consulter</p>
               </div>
-              <div className="w-full px-3 py-2 gap-2 flex items-center text-gray-900 hover:bg-teal-50 hover:text-teal-500 rounded-md">
+              <div className="w-full px-3 py-2 gap-2 flex items-center text-gray-900 hover:bg-teal-50 hover:text-teal-500 rounded-md" onClick={() => navigate(`/edit-group/${group?._id}`)}>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-[18px] w-[18px]" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h8.925l-2 2H5v14h14v-6.95l2-2V19q0 .825-.587 1.413T19 21zm4-6v-4.25l9.175-9.175q.3-.3.675-.45t.75-.15q.4 0 .763.15t.662.45L22.425 3q.275.3.425.663T23 4.4q0 .375-.137.738t-.438.662L13.25 15zM21.025 4.4l-1.4-1.4zM11 13h1.4l5.8-5.8l-.7-.7l-.725-.7L11 11.575zm6.5-6.5l-.725-.7zl.7.7z"/></svg>
                 <p className="text-xs font-semibold">Modifier</p>
               </div>

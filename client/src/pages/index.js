@@ -6,6 +6,7 @@ import Feed from "./Feed";
 import Posts from "./Posts";
 import NewPost from "./NewPost";
 import Group from "./Group";
+import EditGroup from "./EditGroup";
 
 export {
   Signin,
@@ -16,4 +17,5 @@ export {
   Posts,
   NewPost,
   Group,
+  EditGroup,
 }

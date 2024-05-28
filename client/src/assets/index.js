@@ -4,7 +4,6 @@ import barragan from './barragan.png';
 import coyote from './coyote.png';
 import grimmjow from './grimmjow.png';
 import szayel from './szayel.png';
-import ulquiorra from './ulquiorra.png';
 import yammy from './yammy.png';
 import signinBanner1 from './signin_banner1.jpg';
 import signinBanner2 from './signin_banner2.jpg';
@@ -31,7 +30,6 @@ export {
   coyote,
   grimmjow,
   szayel,
-  ulquiorra,
   yammy,
   dashboard,
   friends,

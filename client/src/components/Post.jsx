@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from 'react'
-import { ulquiorra } from '../assets';
 import { fetchUser, transformDate } from '../utils';
 import Dropdown from './Dropdown';
 import { addComment, addLike, getPostComments } from '../services/post-service';
@@ -13,6 +12,7 @@ const Post = ({ id, post, onSetId, selectedId, onModalPost }) => {
   const [comments, setComments] = useState([])
   const [comment, setComment] = useState("")
   const [commenting, setCommenting] = useState(false);
+  const [loadingComments, setLoadingComments] = useState(false);
 
   const onDropdown = (id) => {
     onSetId(id === selectedId ? "" : id);
@@ -55,14 +55,13 @@ const Post = ({ id, post, onSetId, selectedId, onModalPost }) => {
   }, [post])
 
   useEffect(() => {
+    setLoadingComments(true);
     getPostComments(`post/${post._id}/comments`)
     .then((response) => {
       setComments(response.data);
     })
-    .catch((error) => {
-      console.log(error);
-    })
-  }, [post])
+    setLoadingComments(false);
+  })
 
   useEffect(() => {
     onModalPost(modalPostId)
@@ -89,7 +88,7 @@ const Post = ({ id, post, onSetId, selectedId, onModalPost }) => {
           <div className="flex justify-center items-center gap-2">
             {/* Avatar */}
             <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
-              <img src={post.creatorAvatar ? post.creatorAvatar : ulquiorra} alt="user" className="w-full h-full object-cover" />
+              <img src={post.creatorAvatar ? post.creatorAvatar : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'} alt="user" className="w-full h-full object-cover" />
             </div>
 
             {/* User info */}
@@ -233,56 +232,58 @@ const Post = ({ id, post, onSetId, selectedId, onModalPost }) => {
 
           {/* Comments */}
           <div className="w-full flex flex-col gap-2 mt-4">
-            {comments?.length === 0 ?
+            {loadingComments ? (
               <div className="w-full flex justify-center items-center gap-1">
                 <p className="text-xs font-light">Chargement</p>
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><circle cx="4" cy="12" r="3" fill="#000000"><animate id="svgSpinners3DotsFade0" fill="freeze" attributeName="opacity" begin="0;svgSpinners3DotsFade1.end-0.25s" dur="0.75s" values="1;.2"/></circle><circle cx="12" cy="12" r="3" fill="#000000" opacity=".4"><animate fill="freeze" attributeName="opacity" begin="svgSpinners3DotsFade0.begin+0.15s" dur="0.75s" values="1;.2"/></circle><circle cx="20" cy="12" r="3" fill="#000000" opacity=".3"><animate id="svgSpinners3DotsFade1" fill="freeze" attributeName="opacity" begin="svgSpinners3DotsFade0.begin+0.3s" dur="0.75s" values="1;.2"/></circle></svg>
               </div>
-              :
-              comments.map((comment) => (
-                <div key={comment._id} className="w-full rounded-lg bg-blue-50 px-4 py-2">
-                  {/* User profile, time and options */}
-                  <div className="flex justify-between items-center w-full">
-                    <div className="flex gap-2 justify-center items-center">
-                      <div className="w-[35px] h-[35px] rounded-full overflow-hidden">
-                        <img src={comment.userAvatar} alt="user" className="w-full h-full object-cover" />
+            ) : (
+              comments?.length > 0 && (
+                comments.map((comment) => (
+                  <div key={comment._id} className="w-full rounded-lg bg-blue-50 px-4 py-2">
+                    {/* User profile, time and options */}
+                    <div className="flex justify-between items-center w-full">
+                      <div className="flex gap-2 justify-center items-center">
+                        <div className="w-[35px] h-[35px] rounded-full overflow-hidden">
+                          <img src={comment.userAvatar} alt="user" className="w-full h-full object-cover" />
+                        </div>
+                        <div className="flex flex-col">
+                          <p className="text-sm font-semibold">{comment.username}</p>
+                          <p className="text-xs font-medium text-gray-500">{transformDate(comment.createdAt)}</p>
+                        </div>
                       </div>
-                      <div className="flex flex-col">
-                        <p className="text-sm font-semibold">{comment.username}</p>
-                        <p className="text-xs font-medium text-gray-500">{transformDate(comment.createdAt)}</p>
-                      </div>
-                    </div>
-
-                    {/* Options */}
-                    {user._id === comment.userId ?
-                      <div className="flex justify-center items-center gap-2">
-                        <div className="flex justify-center items-center gap-1 border-r border-gray-300 pr-2">
+  
+                      {/* Options */}
+                      {user._id === comment.userId ?
+                        <div className="flex justify-center items-center gap-2">
+                          <div className="flex justify-center items-center gap-1 border-r border-gray-300 pr-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path fill="#000000" d="M7 21V8l7-7l1.85 1.85L14.55 8H23v4.4L19.35 21zm2-2h9l3-7v-2h-9l1.35-5.5L9 8.85zM9 8.85V19zM2 21V8h5v2H4v9h3v2z"/></svg>
+                            <p className="text-xs font-light">0</p>
+                          </div>
+                          <div className="rounded-full flex justify-center items-center transition-all cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path fill="#000000" d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h8.925l-2 2H5v14h14v-6.95l2-2V19q0 .825-.587 1.413T19 21zm4-6v-4.25l9.175-9.175q.3-.3.675-.45t.75-.15q.4 0 .763.15t.662.45L22.425 3q.275.3.425.663T23 4.4q0 .375-.137.738t-.438.662L13.25 15zM21.025 4.4l-1.4-1.4zM11 13h1.4l5.8-5.8l-.7-.7l-.725-.7L11 11.575zm6.5-6.5l-.725-.7zl.7.7z"/></svg>
+                          </div>
+                          <div className="rounded-full flex justify-center items-center transition-all cursor-pointer">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path fill="#ef4444" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zm2-4h2V8H9zm4 0h2V8h-2z"/></svg>
+                          </div>
+                        </div>
+                        :
+                        <div className="flex justify-center items-center gap-1">
                           <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path fill="#000000" d="M7 21V8l7-7l1.85 1.85L14.55 8H23v4.4L19.35 21zm2-2h9l3-7v-2h-9l1.35-5.5L9 8.85zM9 8.85V19zM2 21V8h5v2H4v9h3v2z"/></svg>
                           <p className="text-xs font-light">0</p>
                         </div>
-                        <div className="rounded-full flex justify-center items-center transition-all cursor-pointer">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path fill="#000000" d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h8.925l-2 2H5v14h14v-6.95l2-2V19q0 .825-.587 1.413T19 21zm4-6v-4.25l9.175-9.175q.3-.3.675-.45t.75-.15q.4 0 .763.15t.662.45L22.425 3q.275.3.425.663T23 4.4q0 .375-.137.738t-.438.662L13.25 15zM21.025 4.4l-1.4-1.4zM11 13h1.4l5.8-5.8l-.7-.7l-.725-.7L11 11.575zm6.5-6.5l-.725-.7zl.7.7z"/></svg>
-                        </div>
-                        <div className="rounded-full flex justify-center items-center transition-all cursor-pointer">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path fill="#ef4444" d="M7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zm2-4h2V8H9zm4 0h2V8h-2z"/></svg>
-                        </div>
-                      </div>
-                      :
-                      <div className="flex justify-center items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path fill="#000000" d="M7 21V8l7-7l1.85 1.85L14.55 8H23v4.4L19.35 21zm2-2h9l3-7v-2h-9l1.35-5.5L9 8.85zM9 8.85V19zM2 21V8h5v2H4v9h3v2z"/></svg>
-                        <p className="text-xs font-light">0</p>
-                      </div>
-                    }
+                      }
+                    </div>
+                    {/* Comment text */}
+                    <div className="w-full mt-4">
+                      <p className="text-[13px] font-light">
+                        {comment.text}
+                      </p>
+                    </div>
                   </div>
-                  {/* Comment text */}
-                  <div className="w-full mt-4">
-                    <p className="text-[13px] font-light">
-                      {comment.text}
-                    </p>
-                  </div>
-                </div>
-              ))
-            }
+                ))
+              )
+            )}
           </div>
         </div>
       </div>

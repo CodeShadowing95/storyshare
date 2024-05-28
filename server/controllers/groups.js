@@ -10,6 +10,15 @@ export const getAllGroups = async (req, res) => {
   }
 }
 
+export const getAllPublicGroups = async (req, res) => {
+  try {
+    const groups = await Group.find({ privacy: "public" });
+    res.status(200).json(groups);
+  } catch (error) {
+    res.status(404).json({ message: error.message });
+  }
+}
+
 export const getGroups = async (req, res) => {
   const { id } = req.params;
 
@@ -29,7 +38,8 @@ export const getGroups = async (req, res) => {
 }
 
 export const getGroup = async (req, res) => {
-  const { _id: id } = req.params;
+  const { id } = req.params;
+  // console.log(id);
 
   try {
     const group = await Group.findById(id);

@@ -1,16 +1,17 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Post from "../components/Post"
 import { deletePost, getPosts } from "../services/post-service";
-import { loader, ulquiorra } from "../assets";
+import { loader } from "../assets";
 import { fetchUser } from "../utils";
 import { getUsers } from "../services/user-service";
-import { getGroupsList } from "../services/group-service";
+import { getPublicGroups } from "../services/group-service";
 
 const Feed = ({ onSuccess }) => {
   const { result: user} = fetchUser();
   const [posts, setPosts] = useState([]);
+  let tempPosts = useRef([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPost, setSelectedPost] = useState("")
   const [isSuccess, setIsSuccess] = useState(false);
@@ -52,13 +53,22 @@ const Feed = ({ onSuccess }) => {
   const getAllPosts = async () => {
     setIsLoading(true);
 
+    if(tempPosts.current.length > 0) {
+      if(posts.length === tempPosts.current.length) {
+        setPosts(tempPosts.current);
+        setIsLoading(false);
+        return;
+      }
+    }
+
     await getPosts()
     .then((response) => {
       const { data } = response.data;
       setPosts(data);
-    
-      setIsLoading(false);
+      tempPosts.current = data;
     })
+    
+    setIsLoading(false);
   }
 
   // API call to get posts
@@ -94,19 +104,22 @@ const Feed = ({ onSuccess }) => {
     }, 5000)
   }, [isDeleted])
 
-
   // Handling delete modal
   useEffect(() => {
     modalData && setOpenModal(true);
   }, [modalData])
 
+
+  // Handling groups
   useEffect(() => {
     setLoadingGroup(true)
-    getGroupsList()
+
+    getPublicGroups()
     .then((response) => {
       const { data } = response;
-      setGroups(data);
-      setRandomGroup(data[Math.floor(Math.random() * data.length)])
+      const tempGroup = data.filter((item) => item.creator !== user._id);
+      setGroups(tempGroup);
+      setRandomGroup(tempGroup[Math.floor(Math.random() * data.length)])
 
       setLoadingGroup(false)
     })
@@ -116,7 +129,7 @@ const Feed = ({ onSuccess }) => {
 
 
   return (
-    <section className="w-[calc(100vw-300px)] min-h-screen flex pt-10 px-4 relative overflow-hidden">
+    <section className="w-[calc(100vw-300px)] min-h-screen flex pt-6 px-4 relative overflow-hidden">
       {/* Success edit message */}
       <div className={`fixed top-24 left-[40%] z-20 ${isSuccess ? "translate-y-0" : "-translate-y-[200%]"} transition-all rounded-xl`}>
         <div className="w-[300px] flex flex-col justify-center items-center gap-1 rounded-lg bg-green-50 p-4 shadow-2xl relative">
@@ -218,7 +231,7 @@ const Feed = ({ onSuccess }) => {
 
       {/* Stories & Suggestions && Recommendations */}
       {/* <div className="sticky top-0 right-0 w-[300px] h-full gap-8 px-4"> */}
-      <div className="w-[300px] h-full gap-8 px-4">
+      <div className="w-[300px] h-full gap-8 px-3">
         {/* Stories */}
         <div className="w-full flex-col gap-2 overflow-hidden mb-8">
           <p className="text-base font-extrabold mb-3">Stories</p>
@@ -287,7 +300,7 @@ const Feed = ({ onSuccess }) => {
                   <div key={index} className="w-full flex justify-between items-center">
                     <div className="flex justify-center items-center gap-2">
                       <div className="w-[40px] h-[40px] rounded-full overflow-hidden">
-                        <img src={suggestion.imgProfile ? suggestion.imgProfile : ulquiorra} alt="user" className="w-full h-full object-cover" />
+                        <img src={suggestion.imgProfile ? suggestion.imgProfile : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'} alt="user" className="w-full h-full object-cover" />
                       </div>
                       <p className="text-xs font-bold max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">@{suggestion.username}</p>
                     </div>
@@ -330,7 +343,7 @@ const Feed = ({ onSuccess }) => {
             )
             :
             (
-              <div className="w-full flex flex-col gap-4 mb-8 rounded-md border border-gray-300 p-4">
+              <div className="w-full flex flex-col gap-3 mb-8 rounded-md border border-gray-300 p-4">
                 <div className="flex justify-center items-center gap-4">
                   <div className="w-[70px] h-[70px] rounded-full overflow-hidden">
                     <img src={user?.imgProfile ? user.imgProfile : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'} alt="user" className="w-full h-full object-cover" />
@@ -345,7 +358,7 @@ const Feed = ({ onSuccess }) => {
                 </div>
                 {/* Button */}
                 <div className="w-full flex justify-center items-center">
-                  <button onClick={() => setOpenModal(true)} className="w-[150px] h-10 border border-blue-500 rounded-full text-sm text-blue-500 hover:bg-blue-50 hover:border-2 transition-colors">Voir le groupe</button>
+                  <button className="w-[150px] h-8 border border-blue-500 rounded-full text-sm text-blue-500 hover:bg-blue-50 hover:border-2 transition-colors">Voir le groupe</button>
                 </div>
               </div>
             )

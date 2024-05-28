@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { barragan, coyote, grimmjow, logo, logo_svg, szayel, ulquiorra } from "../assets";
+import { barragan, coyote, grimmjow, logo, logo_svg, szayel } from "../assets";
 import { menus } from "../constants";
 
 const Sidebar = ({ user }) => {
@@ -39,7 +39,7 @@ const Sidebar = ({ user }) => {
             </div>
             {/* Logo2 */}
             <div className="w-[60px] h-[60px] rounded-full overflow-hidden -ml-2">
-              <img src={profile?.imgProfile ? profile?.imgProfile : ulquiorra} alt="user" className="w-full h-full object-cover" />
+              <img src={profile?.imgProfile ? profile?.imgProfile : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'} alt="user" className="w-full h-full object-cover" />
             </div>
           </div>
           <div className="w-full relative z-20">

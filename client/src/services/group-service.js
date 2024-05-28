@@ -2,9 +2,9 @@ import axios from "axios";
 
 const BASE_URL = "http://localhost:5000/groups";
 
-export const getGroupsList = async () => {
+export const getPublicGroups = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/`);
+    const response = await axios.get(`${BASE_URL}/public`);
     return response;
   } catch (error) {
     return { error };
@@ -32,6 +32,20 @@ export const getGroup = async (url) => {
 export const createGroup = async (url, data) => {
   try {
     const response = await axios.post(`${BASE_URL}/${url}`, data, {
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+      },
+    });
+    return response;
+  } catch (error) {
+    return { error };
+  }
+}
+
+export const updateGroup = async (url, data) => {
+  try {
+    const response = await axios.patch(`${BASE_URL}/${url}`, data, {
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json",

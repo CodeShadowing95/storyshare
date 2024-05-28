@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/no-unknown-property */
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GroupCard, Searchgroup } from "../components"
 import { getUsers } from "../services/user-service";
 import { createGroup, getGroups } from "../services/group-service";
@@ -13,9 +13,12 @@ const Group = ({ user }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [loadingGroups, setLoadingGroups] = useState(false)
   const [groups, setGroups] = useState([])
+  const [searchTerm, setSearchTerm] = useState("")
 
 
   const [users, setUsers] = useState([])
+  let tempUsers = useRef([])
+  let tempGroups = useRef([])
   const [memberFigures, setMemberFigures] = useState([])
   const [groupData, setGroupData] = useState({
     creator: user.result._id,
@@ -48,6 +51,10 @@ const Group = ({ user }) => {
 
   const handleChange = (e) => {
     setGroupData({ ...groupData, [e.target.name]: e.target.value })
+  }
+
+  const handleSearch = (e) => {
+    setUsers(tempUsers.current.filter((user) => user.username.toLowerCase().includes(e.target.value.toLowerCase())))
   }
 
   const onAddRemoveMember = (userData) => {
@@ -97,6 +104,7 @@ const Group = ({ user }) => {
     setOpenModal(false);
   }
 
+  // Discard a modal when click outside
   const discardModalWhenClickOutside = (e) => {
     if (e.target.id === "modal") setOpenModal(false);
   }
@@ -106,25 +114,51 @@ const Group = ({ user }) => {
     return () => document.removeEventListener("click", discardModalWhenClickOutside);
   }, []);
 
+
+  // Get Users
   useEffect(() => {
     getUsers()
     .then((response) => {
       const { data: datas} = response.data;
       setUsers(datas.filter((item) => item._id !== user?.result?._id));
+      tempUsers.current = datas.filter((item) => item._id !== user?.result?._id);
     })
   }, [user?.result?._id]);
 
+
+  // Get Groups
   useEffect(() => {
     setLoadingGroups(true);
+    
+    if(tempGroups.length > 0) {
+      if(groups.length == tempGroups.current?.length) {
+        setGroups(tempGroups.current);
+        setLoadingGroups(false);
+        return
+      }
+    }
+
     getGroups(`creator/${user.result._id}`)
     .then((response) => {
-      // console.log(response);
       const { data } = response;
-      // console.log(data);
-      setGroups(data);
+      if(data?.length !== tempGroups.current?.length) {
+        setGroups(data);
+        tempGroups.current = data;
+        return
+      }
+      setGroups(tempGroups.current);
       setLoadingGroups(false);
     })
-  }, []);
+  }, [groups.length, user.result._id]);
+
+  // Handle Search
+  useEffect(() => {
+    if(!searchTerm) {
+      setGroups(tempGroups.current)
+      return
+    }
+    setGroups(tempGroups.current.filter((group) => group.name.toLowerCase().includes(searchTerm.toLowerCase())))
+  }, [searchTerm])
 
   return (
     <section className="w-[calc(100vw-300px)] min-h-screen flex pt-10 px-4 relative overflow-hidden">
@@ -133,23 +167,23 @@ const Group = ({ user }) => {
         <div className="w-full flex justify-between items-center">
           <p className="text-2xl font-extrabold">Forums <span className="text-sm text-gray-400 font-normal">|</span> <span className="text-sm text-gray-400 font-semibold">{groups?.length}</span></p>
           <div className="flex justify-center items-center gap-4">
-            <Searchgroup />
+            <Searchgroup onSearch={setSearchTerm} />
             <div className="flex justify-center items-center gap-2 text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center cursor-pointer" onClick={() => setOpenModal(true)}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="#ffffff" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24"><path fill="#ffffff" d="M12.5 11.95q.725-.8 1.113-1.825T14 8q0-1.1-.387-2.125T12.5 4.05q1.5.2 2.5 1.325T16 8q0 1.5-1 2.625t-2.5 1.325M18 20v-3q0-.9-.4-1.713t-1.05-1.437q1.275.45 2.363 1.163T20 17v3zm2-7v-2h-2V9h2V7h2v2h2v2h-2v2zM8 12q-1.65 0-2.825-1.175T4 8q0-1.65 1.175-2.825T8 4q1.65 0 2.825 1.175T12 8q0 1.65-1.175 2.825T8 12m-8 8v-2.8q0-.85.438-1.562T1.6 14.55q1.55-.775 3.15-1.162T8 13q1.65 0 3.25.388t3.15 1.162q.725.375 1.163 1.088T16 17.2V20z"/></svg>
               Nouveau groupe
             </div>
           </div>
         </div>
 
         {/* Groups list */}
-        <div className={`w-full h-full grid ${groups?.length > 0 ? "grid-cols-3" : "grid-cols-1"} gap-4 pb-4`}>
-          {loadingGroups ?
-            <div className="w-full flex justify-center items-center gap-2">
-              <img src={loader} alt="loader" width="20" height="20" />
-              <p className="text-[13px] font-medium">Chargement...</p>
-            </div>
-            :
-            groups && (
+        {loadingGroups ?
+          <div className="fixed inset-0 flex justify-center items-center gap-2 bg-white/50">
+            <img src={loader} alt="loader" className="w-14 h-14" />
+            <p className="text-xl font-medium">Chargement...</p>
+          </div>
+          :
+          <div className={`w-full h-full grid ${groups?.length > 0 ? "grid-cols-3" : "grid-cols-1"} gap-4 pb-4`}>
+            {groups && (
               groups.length === 0 ? (
                 <div className="w-full h-full flex flex-col justify-center items-center gap-4 bg-gray-100 border-[5px] border-dashed border-gray-300 rounded-lg">
                   <svg xmlns="http://www.w3.org/2000/svg" className="w-20 h-20 text-gray-400" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21zm7-5q.95 0 1.725-.55T14.8 14H19V5H5v9h4.2q.3.9 1.075 1.45T12 16"/></svg>
@@ -165,9 +199,9 @@ const Group = ({ user }) => {
                   </div>
                 ))
               )
-            )
-          }
-        </div>
+            )}
+          </div>
+        }
 
         {/* Modal Overlay */}
         <div id="modal" className={`fixed inset-0 justify-center items-center max-h-screen bg-black/50 ${openModal ? 'flex' : 'hidden'}`}>
@@ -256,13 +290,14 @@ const Group = ({ user }) => {
                 <div className={`z-10 ${toggleMenu ? 'block' : 'hidden'} bg-white divide-y divide-gray-100 rounded-lg shadow w-full`}>
                   {/* Search */}
                   <div className="relative w-full p-2">
-                    <input type="text" id="voice-search" className="outline-none bg-white border border-gray-300 text-gray-900 text-[13px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-2 pe-8 p-1.5" placeholder="Rechercher un utilisateur..." required />
+                    <input type="search" id="voice-search" className="outline-none bg-white border border-gray-300 text-gray-900 text-[13px] rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-2 pe-8 p-1.5" placeholder="Rechercher un utilisateur..." required onChange={handleSearch} />
 
                     <button type="button" className="absolute inset-y-0 end-0 flex items-center pe-4">
                       <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24"><path fill="#6b7280" d="m19.6 21l-6.3-6.3q-.75.6-1.725.95T9.5 16q-2.725 0-4.612-1.888T3 9.5q0-2.725 1.888-4.612T9.5 3q2.725 0 4.613 1.888T16 9.5q0 1.1-.35 2.075T14.7 13.3l6.3 6.3zM9.5 14q1.875 0 3.188-1.312T14 9.5q0-1.875-1.312-3.187T9.5 5Q7.625 5 6.313 6.313T5 9.5q0 1.875 1.313 3.188T9.5 14"/></svg>
                     </button>
                   </div>
                   <ul className="py-2 text-sm text-gray-700 max-h-[285px] overflow-auto">
+                    {users.length === 0 && <p className="text-center text-gray-500">Aucun utilisateur</p>}
                     {users.map((userObj) => (
                       <li key={userObj._id}>
                         <div className={`inline-flex w-full px-4 py-2 text-sm text-gray-700 ${memberFigures.includes(userObj) ? 'bg-blue-50' : 'hover:bg-gray-100'}`}>
