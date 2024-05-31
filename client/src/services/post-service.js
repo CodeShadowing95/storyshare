@@ -1,6 +1,7 @@
+/* eslint-disable no-undef */
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000/posts";
+const BASE_URL = "http://localhost:5000/posts" || process.env.BASE_URL + "/posts";
 
 export const getPosts = async () => {
   try {

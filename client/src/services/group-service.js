@@ -1,6 +1,7 @@
+/* eslint-disable no-undef */
 import axios from "axios";
 
-const BASE_URL = "http://localhost:5000/groups";
+const BASE_URL = "http://localhost:5000/groups" || process.env.BASE_URL + "/groups";
 
 export const getPublicGroups = async () => {
   try {

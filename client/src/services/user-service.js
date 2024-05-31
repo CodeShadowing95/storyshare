@@ -1,6 +1,7 @@
+/* eslint-disable no-undef */
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:5000/user';
+const BASE_URL = 'http://localhost:5000/user' || process.env.BASE_URL + "/user";
 
 export const signup = async (url, data) => {
   try {
