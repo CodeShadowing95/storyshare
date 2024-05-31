@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://100.20.92.101:4130';
+const BASE_URL = 'http://localhost:5000';
 
 export const postAction = async (url, data) => {
   try {

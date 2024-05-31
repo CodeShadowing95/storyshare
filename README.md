@@ -28,3 +28,7 @@ Si inscription, renseignez vos identifiants et cliquez sur le bouton `Inscriptio
 
 - Email: `nicolas.chevalier@gmail.com`
 - Mot de passe: `nicolasestiam`
+
+### Remarques
+
+Il y a un petit souci concernant le chargement des données, il y a un temps de chargement de données d'environ quelques secondes. On travaille à corriger cela.

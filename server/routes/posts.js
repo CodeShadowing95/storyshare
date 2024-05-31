@@ -5,7 +5,7 @@ import { getPosts, getPost, createPost, updatePost, deletePost, likePost, commen
 
 const router = express.Router();
 
-router.get('/', (req, res) => res.send('Post route'))
+// router.get('/', (req, res) => res.send('Post route'))
 
 router.get('/', getPosts);
 

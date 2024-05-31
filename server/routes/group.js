@@ -3,7 +3,7 @@ import { createGroup, deleteGroup, getAllGroups, getAllPublicGroups, getGroup, g
 
 const router = express.Router();
 
-router.get('/', (req, res) => res.send('Group route'))
+// router.get('/', (req, res) => res.send('Group route'))
 router.get('/', getAllGroups);
 router.get('/public', getAllPublicGroups);
 router.get('/creator/:id', getGroups);
