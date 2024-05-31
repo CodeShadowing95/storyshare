@@ -58,6 +58,11 @@ const Sidebar = ({ user }) => {
                 <img src={menu.icon} alt={menu.link} className={`w-5 h-5 filter ${menu.link === selected ? 'invert-0' : 'invert'}`} />
                 <p className="text-xs font-semibold">{menu.title}</p>
               </div>
+              <span className={`${menu.link !== "feed" ? "hidden" : "inline-flex"} items-center rounded-full bg-green-100 px-2 py-1 text-[8px] font-bold text-green-600 ring-1 ring-inset ring-green-500/10`}>Fonctionnel</span>
+              <span className={`${menu.link !== "groups" ? "hidden" : "inline-flex"} items-center rounded-full bg-green-100 px-2 py-1 text-[8px] font-bold text-green-600 ring-1 ring-inset ring-green-500/10`}>Fonctionnel</span>
+              <span className={`${menu.link !== "messages" ? "hidden" : "flex"} items-center rounded-full bg-yellow-100 px-2 py-1 text-[8px] font-bold text-yellow-600 ring-1 ring-inset ring-yellow-500/10`}>En_cours...</span>
+              <span className={`${menu.link !== "videos" ? "hidden" : "inline-flex"} items-center rounded-full bg-yellow-100 px-2 py-1 text-[8px] font-bold text-yellow-600 ring-1 ring-inset ring-yellow-500/10`}>En_cours...</span>
+              <span className={`${menu.link !== "friends" ? "hidden" : "inline-flex"} items-center rounded-full bg-yellow-100 px-2 py-1 text-[8px] font-bold text-yellow-600 ring-1 ring-inset ring-yellow-500/10`}>En_cours...</span>
               <span className={`${menu.link !== "notifications" ? "hidden" : "inline-flex"} items-center rounded-md bg-zinc-900 px-2 py-1 text-[10px] font-medium text-white ring-1 ring-inset ring-zinc-500/10`}>0</span>
             </div>
           ))}

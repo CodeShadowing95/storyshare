@@ -2,7 +2,7 @@
 
 ## Vue d'ensemble
 
-![logo]([logo.png](https://i.postimg.cc/vmJZ5czD/Screenshot-2024-05-31-080653.png))
+![Project Banner](https://i.postimg.cc/vmJZ5czD/Screenshot-2024-05-31-080653.png)
 
 ## Présentation
 
@@ -28,7 +28,3 @@ Si inscription, renseignez vos identifiants et cliquez sur le bouton `Inscriptio
 
 - Email: `nicolas.chevalier@gmail.com`
 - Mot de passe: `nicolasestiam`
-
-## Rendu
-
-
