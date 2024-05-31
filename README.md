@@ -1,3 +1,34 @@
 # StoryShare
 
-StoryShare is a social media application where users can share stories with others. The application allows users to create profiles, upload photos and videos, and write stories about their experiences. Users can also like and comment on other users' posts. The application also offers a feature to share stories with others through messaging. StoryShare aims to provide a platform for users to connect with others and share their stories in a visually appealing way. The application aims to be a social hub where users can engage with each other and share their experiences.
+## Vue d'ensemble
+
+![logo]([logo.png](https://i.postimg.cc/vmJZ5czD/Screenshot-2024-05-31-080653.png))
+
+## Présentation
+
+### Description
+
+StoryShare est une application de médias sociaux où les utilisateurs peuvent partager des histoires avec d'autres. L'application permet aux utilisateurs de créer des profils, d'uploader des photos et d'écrire des histoires sur leurs expériences ou aventures. Les utilisateurs peuvent également aimer et commenter les publications des autres utilisateurs. L'application propose également une fonctionnalité permettant aux utilisateurs de créer des groupes, intégrer des utilisateurs à des groupes et partager des histoires entre eux. StoryShare vise à fournir une plate-forme permettant aux utilisateurs de se connecter avec les autres et de partager leurs histoires d'une manière visuellement attrayante.
+
+### Membres du groupe
+
+Priscille Cynthia MAWUT TOUSSI
+Frank Patrick NAMEGNI
+
+### Installation
+
+- Se placer sur le dossier `server`, puis utiliser `npm install` pour installer toutes les dépendances et utiliser le script `npm start` pour lancer l'application serveur.
+
+- Se placer sur le dossier `client`, puis utiliser `npm install` et utiliser le script `npm start` pour lancer l'application cliente.
+
+### Utilisation
+
+Si inscription, renseignez vos identifiants et cliquez sur le bouton `Inscription`.
+À défaut voici les identifiants de connexion par défaut:
+
+- Email: `nicolas.chevalier@gmail.com`
+- Mot de passe: `nicolasestiam`
+
+## Rendu
+
+

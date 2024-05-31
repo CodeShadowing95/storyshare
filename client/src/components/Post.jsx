@@ -61,7 +61,7 @@ const Post = ({ id, post, onSetId, selectedId, onModalPost }) => {
       setComments(response.data);
     })
     setLoadingComments(false);
-  })
+  }, [post._id])
 
   useEffect(() => {
     onModalPost(modalPostId)
@@ -121,7 +121,7 @@ const Post = ({ id, post, onSetId, selectedId, onModalPost }) => {
               post.images.length <= 4 ?
                 <div className={`w-full grid ${post.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'} gap-1`}>
                   {post.images.map((image) => (
-                    <div key={image.id} className="h-full rounded-2xl overflow-hidden">
+                    <div key={image.id} className="h-[300px] rounded-2xl overflow-hidden">
                       <img src={image.src} alt="post" className="w-full h-full object-cover" />
                     </div>
                   ))}
@@ -129,22 +129,22 @@ const Post = ({ id, post, onSetId, selectedId, onModalPost }) => {
                 :
                 <>
                 <div className={`w-full grid grid-cols-2 gap-1`}>
-                  <div className="h-full rounded-2xl overflow-hidden">
+                  <div className="h-[300px] rounded-2xl overflow-hidden">
                     {/* <img src="/uefa.jpg" alt="post" className="w-full h-full object-cover" /> */}
                     <img src={post.images[0]?.src} alt="post" className="w-full h-full object-cover" />
                   </div>
-                  <div className="h-full rounded-2xl overflow-hidden">
+                  <div className="h-[300px] rounded-2xl overflow-hidden">
                     <img src={post.images[1]?.src} alt="post" className="w-full h-full object-cover" />
                   </div>
-                  <div className="h-full rounded-2xl overflow-hidden">
+                  <div className="h-[300px] rounded-2xl overflow-hidden">
                     <img src={post.images[2]?.src} alt="post" className="w-full h-full object-cover" />
                   </div>
-                  <div className="h-full rounded-2xl overflow-hidden relative">
+                  <div className="h-[300px] rounded-2xl overflow-hidden relative">
                     <img src={post.images[3]?.src} alt="post" className="w-full h-full object-cover" />
                     {/* <img src={postages[3].src} alt="post" className="w-full h-full object-cover" /> */}
                     <div className="absolute inset-0 bg-black/60 rounded-2xl">
                       <div className="w-full h-full flex justify-center items-center">
-                        <p className="text-xl font-bold text-white">+{post.images.length - 4} image(s)</p>
+                        <p className="text-xl font-bold text-white">Plus de {post.images.length} images</p>
                       </div>
                     </div>
                   </div>

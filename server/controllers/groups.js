@@ -12,8 +12,9 @@ export const getAllGroups = async (req, res) => {
 
 export const getAllPublicGroups = async (req, res) => {
   try {
-    const groups = await Group.find({ privacy: "public" });
-    res.status(200).json(groups);
+    let groups = await Group.find({ privacy: "public" });
+    const shuffledGroups = groups.sort(() => Math.random() - 0.5);
+    res.status(200).json(shuffledGroups);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }

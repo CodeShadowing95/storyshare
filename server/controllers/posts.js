@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import PostMessage from "../models/post.js";
-import { shuffle } from "./util.js";
 
 
 /**
@@ -16,8 +15,8 @@ export const getPosts = async (req, res) => {
 
   try {
     let posts = await PostMessage.find();
+    posts = posts.sort(() => Math.random() - 0.5);
 
-    posts = shuffle(posts);
     res.status(200).json({ data: posts });
   } catch (error) {
     res.status.json({ message: error.message });

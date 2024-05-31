@@ -17,11 +17,16 @@ body {
 }
 
 body::-webkit-scrollbar {
-  width: 5px;
+  width: 10px;
 }
 
 body::-webkit-scrollbar-thumb {
-  background-color: #666e75;
+  background-color: #a3a3a3;
+  border-radius: 5px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background-color: #777777;
   border-radius: 5px;
 }
 
@@ -75,3 +80,7 @@ body::-webkit-scrollbar-thumb {
 .card-signup {
   transform: rotateY(180deg);
 }
+
+/* .story-container::-webkit-scrollbar {
+  display: none;
+} */

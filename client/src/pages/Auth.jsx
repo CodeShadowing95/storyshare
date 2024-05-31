@@ -11,8 +11,21 @@ const Auth = () => {
     if (isSuccess) {
       setIsError("");
       setIsSigninError(false);
+
+      setTimeout(() => {
+        setIsSuccess(false);
+      }, 3000);
     }
-  }, [isSuccess]);
+
+    if (isError) {
+      setIsSuccess(false);
+      setIsSigninError(true);
+
+      setTimeout(() => {
+        setIsError("");
+      }, 3000);
+    }
+  }, [isSuccess, isError]);
 
   return (
     <div className="w-screen h-screen flex justify-center items-center relative overflow-hidden">

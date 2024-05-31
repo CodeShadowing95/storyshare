@@ -9,7 +9,7 @@ const Sidebar = ({ user }) => {
   const [selected, setSelected] = useState("feed");
   const navigate = useNavigate();
   const location = useLocation();
-  const {result: profile} = user;
+  const profile = user?.result;
 
   const goToPage = (page) => {
     setToggleDropdown(false);

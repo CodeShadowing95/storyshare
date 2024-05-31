@@ -1,9 +1,9 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Post from "../components/Post"
 import { deletePost, getPosts } from "../services/post-service";
-import { loader } from "../assets";
+import { barragan, coyote, imgModel1, imgModel2, loader, yammy } from "../assets";
 import { fetchUser } from "../utils";
 import { getUsers } from "../services/user-service";
 import { getPublicGroups } from "../services/group-service";
@@ -25,7 +25,7 @@ const Feed = ({ onSuccess }) => {
   const [waitingDelete, setWaitingDelete] = useState(false)
 
   const [groups, setGroups] = useState([])
-  const [randomGroup, setRandomGroup] = useState({})
+  const randomGroup = useRef()
   const [loadingGroup, setLoadingGroup] = useState(false)
 
   const navigate = useNavigate();
@@ -50,7 +50,7 @@ const Feed = ({ onSuccess }) => {
     // navigateTo("feed");
   }
 
-  const getAllPosts = async () => {
+  const memoizedGetPosts = useMemo(() => async () => {
     setIsLoading(true);
 
     if(tempPosts.current.length > 0) {
@@ -69,12 +69,12 @@ const Feed = ({ onSuccess }) => {
     })
     
     setIsLoading(false);
-  }
+  }, [posts.length])
 
   // API call to get posts
   useEffect(() => {
-    getAllPosts()
-  }, [])
+    memoizedGetPosts()
+  }, [memoizedGetPosts])
 
   // Get friends suggestions
   useEffect(() => {
@@ -119,11 +119,12 @@ const Feed = ({ onSuccess }) => {
       const { data } = response;
       const tempGroup = data.filter((item) => item.creator !== user._id);
       setGroups(tempGroup);
-      setRandomGroup(tempGroup[Math.floor(Math.random() * data.length)])
+
+      randomGroup.current = tempGroup[Math.floor(Math.random() * tempGroup.length)]
 
       setLoadingGroup(false)
     })
-  }, [])
+  }, [user._id, suggestions.length])
 
 
 
@@ -234,42 +235,40 @@ const Feed = ({ onSuccess }) => {
       <div className="w-[300px] h-full gap-8 px-3">
         {/* Stories */}
         <div className="w-full flex-col gap-2 overflow-hidden mb-8">
-          <p className="text-base font-extrabold mb-3">Stories</p>
+          <p className="text-base font-extrabold mb-3">Vidskits</p>
           {/* If stories empty */}
-          <div className="w-full h-[200px] flex justify-center items-center border-dashed border-2 rounded-md bg-gray-100">
+          {/* <div className="w-full h-[200px] flex justify-center items-center border-dashed border-2 rounded-md bg-gray-100">
             <div className="w-full flex flex-col justify-center items-center mb-8">
               <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24"><path fill="#a0a0a0" d="M5.5 16V8a3 3 0 0 0-3-3a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 .5.5a3 3 0 0 0 3-3m7-11c1.886 0 2.828 0 3.414.586c.586.586.586 1.528.586 3.414v6c0 1.886 0 2.828-.586 3.414C15.328 19 14.386 19 12.5 19h-1c-1.886 0-2.828 0-3.414-.586C7.5 17.828 7.5 16.886 7.5 15V9c0-1.886 0-2.828.586-3.414C8.672 5 9.614 5 11.5 5zm6 3v8a3 3 0 0 0 3 3a.5.5 0 0 0 .5-.5v-13a.5.5 0 0 0-.5-.5a3 3 0 0 0-3 3"/></svg>
               <p className="text-xs font-semibold text-gray-500 max-w-[200px] text-center">Aucune story pour le moment</p>
             </div>
-          </div>
+          </div> */}
 
           {/* If stories not empty */}
-          {/* <div className="w-[300px] h-[200px] gap-2 flex overflow-hidden">
-            <div className="min-w-[120px] flex justify-center items-end rounded-xl p-1 overflow-hidden bg-cover bg-center bg-no-repeat" style={{backgroundImage: "url(/assets/test3.jpg)"}}>
-              <div className="w-full flex items-center bg-white rounded-full shadow-xl gap-1 p-[1px]">
-                <div className="w-[25px] h-[25px] rounded-full overflow-hidden">
-                  <img src="/assets/ulquiorra.png" alt="user" className="w-full h-full object-cover" />
+          <div className="w-[300px] h-[200px] gap-2 flex overflow-auto">
+            <div className="w-[150px] flex justify-center items-end rounded-xl p-1 overflow-hidden relative">
+              <img src={imgModel1} alt="example" className="w-full h-full object-cover rounded-xl" />
+              <div className="absolute inset-0 flex flex-col justify-end p-2">
+                <div className="flex items-center bg-white rounded-full shadow-xl gap-1 p-[1px]">
+                  <div className="w-[25px] h-[25px] rounded-full overflow-hidden">
+                    <img src={barragan} alt="user" className="w-full h-full object-cover" />
+                  </div>
+                  <p className="text-[11px] font-bold max-w-[100px] truncate">Ulquiorra Cifer</p>
                 </div>
-                <p className="text-[11px] font-bold overflow-hidden max-w-[75px] text-ellipsis whitespace-nowrap">Ulquiorra Cifer</p>
               </div>
             </div>
-            <div className="min-w-[120px] flex justify-center items-end rounded-xl p-1 overflow-hidden bg-cover bg-center bg-no-repeat" style={{backgroundImage: "url(/assets/test1.jpg)"}}>
-              <div className="w-full flex items-center bg-white rounded-full shadow-xl gap-1 p-[1px]">
-                <div className="w-[25px] h-[25px] rounded-full overflow-hidden">
-                  <img src="/assets/yammy.png" alt="user" className="w-full h-full object-cover" />
+            <div className="w-[150px] flex justify-center items-end rounded-xl p-1 overflow-hidden relative">
+              <img src={imgModel1} alt="example" className="w-full h-full object-cover rounded-xl" />
+              <div className="absolute inset-0 flex flex-col justify-end p-2">
+                <div className="flex items-center bg-white rounded-full shadow-xl gap-1 p-[1px]">
+                  <div className="w-[25px] h-[25px] rounded-full overflow-hidden">
+                    <img src={barragan} alt="user" className="w-full h-full object-cover" />
+                  </div>
+                  <p className="text-[11px] font-bold max-w-[100px] truncate">Ulquiorra Cifer</p>
                 </div>
-                <p className="text-[11px] font-bold overflow-hidden max-w-[75px] text-ellipsis whitespace-nowrap">Yammy Llargo</p>
               </div>
             </div>
-            <div className="min-w-[120px] flex justify-center items-end rounded-xl p-1 overflow-hidden bg-cover bg-center bg-no-repeat" style={{backgroundImage: "url(/assets/test2.jpg)"}}>
-              <div className="w-full flex items-center bg-white rounded-full shadow-xl gap-1 p-[1px]">
-                <div className="w-[25px] h-[25px] rounded-full overflow-hidden">
-                  <img src="/assets/coyote.png" alt="user" className="w-full h-full object-cover" />
-                </div>
-                <p className="text-[11px] font-bold overflow-hidden max-w-[75px] text-ellipsis whitespace-nowrap">Yammy Llargo</p>
-              </div>
-            </div>
-          </div> */}
+          </div>
         </div>
 
 
@@ -349,12 +348,12 @@ const Feed = ({ onSuccess }) => {
                     <img src={user?.imgProfile ? user.imgProfile : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'} alt="user" className="w-full h-full object-cover" />
                   </div>
                   <div className="w-[85px] h-[85px]">
-                    <img src={randomGroup?.image ? randomGroup?.image : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'} alt="user" className="w-full h-full object-cover" />
+                    <img src={randomGroup.current?.image ? randomGroup.current?.image : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png'} alt="user" className="w-full h-full object-cover" />
                   </div>
                 </div>
                 {/* Content */}
                 <div className="w-full flex justify-center items-center">
-                  <p className="text-[13px] text-center text-gray-500">{user?.username.split(' ')[0]}, découvrez les activités du groupe <span className="text-black font-semibold">{randomGroup?.name}</span> qui pourraient vous intéresser</p>
+                  <p className="text-[13px] text-center text-gray-500">{user?.username.split(' ')[0]}, découvrez les activités du groupe <span className="text-black font-semibold">{randomGroup.current?.name}</span> qui pourraient vous intéresser</p>
                 </div>
                 {/* Button */}
                 <div className="w-full flex justify-center items-center">
