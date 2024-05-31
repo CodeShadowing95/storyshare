@@ -1,6 +1,6 @@
 # StoryShare
 
-## Vue d'ensemble
+## Aperçu
 
 ![Project Banner](https://i.postimg.cc/vmJZ5czD/Screenshot-2024-05-31-080653.png)
 
@@ -12,8 +12,8 @@ StoryShare est une application de médias sociaux où les utilisateurs peuvent p
 
 ### Membres du groupe
 
-Priscille Cynthia MAWUT TOUSSI
-Frank Patrick NAMEGNI
+- Priscille Cynthia MAWUT TOUSSI.
+- Frank Patrick NAMEGNI.
 
 ### Installation
 
